@@ -9,10 +9,12 @@ public class Main {
 	public static void main(String[] args) {
 		WarriorContainer warriorList = new WarriorContainer();
 
+		System.out.println(warriorList);
+
 		Random rand = new Random();
 		
-		Player cpu = new Player(warriorList.getWarriors().get(rand.nextInt(3)));
-		Player usr = new Player(warriorList.getWarriors().get(rand.nextInt(3)));
+		Player cpu = new Player(warriorList.getWarriors().get(rand.nextInt(warriorList.getWarriors().size())));
+		Player usr = new Player(warriorList.getWarriors().get(rand.nextInt(warriorList.getWarriors().size())));
 		
 		ArrayList<Player> playerList = new ArrayList<Player>();
 		playerList.add(usr);
@@ -35,7 +37,7 @@ public class Main {
 					cpu.setCurrentHP(cpu.getWarrior().getHp());
 					usr.setCurrentHP(usr.getWarrior().getHp());
 					
-					System.out.println("Empieza el combate entre:\n" + usr.getWarrior().getIdWarrior() + "\n" + cpu.getWarrior().getIdWarrior());
+					System.out.println("Empieza el combate entre:\n" + usr.getWarrior().getName() + "\n" + cpu.getWarrior().getName());
 					System.out.println("\nPULSA ENTER PARA EMPEZAR");
 					
 					int i = 0;

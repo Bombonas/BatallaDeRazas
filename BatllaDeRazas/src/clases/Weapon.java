@@ -12,7 +12,7 @@ public class Weapon {
 	private String url;
 	
 	 public Weapon(String name, int hp, int strength, int defense, int agility, int speed, int defeatPoints,
-	            int idWeapon) {
+	            int idWeapon, String url) {
 	        super();
 	        this.name = name;
 	        this.hp = hp;
@@ -22,6 +22,7 @@ public class Weapon {
 	        this.speed = speed;
 	        this.defeatPoints = defeatPoints;
 	        this.idWeapon = idWeapon;
+            this.url = url;
 	}
 	
 	public String getName() {
@@ -77,6 +78,10 @@ public class Weapon {
     }
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String toString() {
+         return name;
     }
 	
 }

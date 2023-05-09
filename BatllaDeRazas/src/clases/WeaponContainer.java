@@ -1,5 +1,6 @@
 package clases;
 
+import java.sql.*;
 import java.util.ArrayList;
 
 public class WeaponContainer {
@@ -8,13 +9,42 @@ public class WeaponContainer {
     public WeaponContainer() {
 
         weapons = new ArrayList<Weapon>();
-        Weapon daga = new Weapon("Daga", 0, 0, 0, 0, 3, 10, 1);
-        Weapon sword = new Weapon("Sword", 0, 1, 0, 0, 1, 10, 1);
-        Weapon scimitar = new Weapon("Scimitar", 0, 0, 0, 0, 2, 14, 1);
 
-        weapons.add(daga);
-        weapons.add(sword);
-        weapons.add(scimitar);
+        String url = "jdbc:mysql://localhost/raceWar?serverTimezone=UTC";
+        String usr = "root";
+        String pas = "1234";
+
+        String update = "";
+        String query = "";
+        String data = "";
+
+        try {
+            // Ejercicio A
+            // Cargar driver
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            System.out.println("Driver cargado correctamente");
+
+            // Crear conexion DDBB
+            Connection conn = DriverManager.getConnection(url, usr, pas);
+            System.out.println("Conexion creada correctamente");
+
+            // Instanciar objeto de la clase Statement
+            Statement stmnt = conn.createStatement();
+
+            // Iniciamos un resultSet
+            ResultSet rs = stmnt.executeQuery("SELECT * FROM weapons");
+
+            while (rs.next()) {
+                weapons.add(new Weapon(rs.getString(2), rs.getInt(4), rs.getInt(5),
+                        rs.getInt(6), rs.getInt(7), rs.getInt(8), rs.getInt(9),
+                        rs.getInt(1), rs.getString(3)));
+            }
+
+        } catch (ClassNotFoundException e) {
+            System.out.println("Driver no cargado correctamente");
+        } catch (SQLException e) {
+            System.out.println("Conexion no creada correctamente");
+        }
     }
     public ArrayList<Weapon> getWeapons() {
         return weapons;

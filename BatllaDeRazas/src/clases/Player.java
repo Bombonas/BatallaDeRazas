@@ -10,7 +10,7 @@ public class Player {
 	public Player(Warrior w) {
 		Random rand = new Random();
 		warrior = w;
-		weapon = w.getWeapons().get(rand.nextInt(3));
+		weapon = w.getWeapons().get(rand.nextInt(w.getWeapons().size()));
 		currentHP = w.getHp();
 	}
 	

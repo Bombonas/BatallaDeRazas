@@ -3,6 +3,8 @@ package clases;
 import java.util.ArrayList;
 
 public class Warrior {
+	private boolean playable;
+	private String name;
 	private String race;
 	private int hp;
 	private int strength;
@@ -14,9 +16,11 @@ public class Warrior {
 	private int defeatPoints;
 	private int idWarrior;
 	
-	public Warrior(String race, int hp, int strength, int defense, int agility, int speed, ArrayList<Weapon> weapons,
-			String url, int defeatPoints, int idWarrior) {
+	public Warrior(boolean playable, String race, int hp, int strength, int defense, int agility, int speed, ArrayList<Weapon> weapons,
+			String url, int defeatPoints, int idWarrior, String name) {
 		super();
+		this.name = name;
+		this.playable = playable;
 		this.race = race;
 		this.hp = hp;
 		this.strength = strength;
@@ -108,5 +112,17 @@ public class Warrior {
 
 	public void setIdWarrior(int idWarrior) {
 		this.idWarrior = idWarrior;
-	}	
+	}
+
+	public String getName() { return name; }
+
+	public String toString() {
+
+		String data = name + ": ";
+
+		for (Weapon w : weapons) {
+			data += w + ", ";
+		}
+		return data;
+	}
 }
