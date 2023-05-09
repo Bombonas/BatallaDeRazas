@@ -2,7 +2,6 @@ package clases;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -22,6 +21,7 @@ public class GUI extends JFrame {
         setSize(1280,720);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setTitle("Hola");
+        setResizable(false);
         setLocationRelativeTo(null);
 
         //Initialize JPanels
@@ -42,7 +42,7 @@ public class GUI extends JFrame {
 
         //Define background variable with path to background.jpg
         try {
-            background = ImageIO.read(new File("src/background/Summer.jpg"));
+            background = ImageIO.read(new File("BatllaDeRazas/src/background/Summer.jpg"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
