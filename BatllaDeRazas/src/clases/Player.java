@@ -8,7 +8,7 @@ public class Player {
 	private Warrior warrior;
 	private Weapon weapon;
 	private int currentHP;
-	
+
 	public Player(Warrior w, String name) {
 		Random rand = new Random();
         this.name = name;
@@ -16,18 +16,18 @@ public class Player {
 		weapon = w.getWeapons().get(rand.nextInt(w.getWeapons().size()));
 		currentHP = w.getHp();
 	}
-	
+
 	public void atack(Player defender) {
         Random rand = new Random();
-        
-        // Set the atack chance 
+
+        // Set the atack chance
         int missChance = rand.nextInt(100)+1;
         if((warrior.getAgility() + weapon.getAgility())*10 > missChance) {
             System.out.println("El ataque ha acertado");
-            
+
             int dodgeChance = rand.nextInt(50)+1;
             if(defender.getWarrior().getAgility() + defender.getWeapon().getAgility() < dodgeChance) {
-                int atckDmg = warrior.getStrength() + weapon.getStrength() 
+                int atckDmg = warrior.getStrength() + weapon.getStrength()
                     - defender.getWarrior().getDefense() - defender.getWeapon().getDefense();
                 System.out.println("El defensor se ha comido " + atckDmg + " de daño vaya subnormal");
                 if(defender.getCurrentHP()-atckDmg < 0) {
@@ -35,13 +35,13 @@ public class Player {
                 }else {
                     defender.setCurrentHP(defender.getCurrentHP()-atckDmg);
                 }
-                
+
             }else System.out.println("El defensor ha esquivado el ataque");
-            
+
         }else System.out.println("El ataque ha fallado");
 
     }
-    
+
     public Warrior getWarrior() {
         return warrior;
     }
@@ -76,9 +76,30 @@ public class Player {
     public void setName(String name) { this.name = name; }
 
     public void swapTurn() {
-        
+
     }
 
     public String toString() { return name + ": " + warrior.getName() + "\\" + warrior.getRace() + " - " + weapon.getName(); }
-	
+
+
+	public int getTotalStrength() {
+		int totalStrength = this.getWarrior().getStrength() + this.getWeapon().getStrength();
+		return totalStrength;
+	}
+
+	public int getTotalDefense() {
+		int totalDefense = this.getWarrior().getDefense() + this.getWeapon().getDefense();
+		return totalDefense;
+	}
+
+	public int getTotalAgility() {
+		int totalAgility = this.getWarrior().getAgility() + this.getWeapon().getAgility();
+		return totalAgility;
+	}
+
+	public int getTotalSpeed() {
+		int totalSpeed = this.getWarrior().getSpeed() + this.getWeapon().getSpeed();
+		return totalSpeed;
+	}
+
 }
