@@ -11,6 +11,7 @@ public class Player {
 	private ArrayList<Weapon> items;
 	
 	public Player(Warrior w, String name) {
+        items = new ArrayList<Weapon>();
 		Random rand = new Random();
         this.name = name;
 		warrior = w;
