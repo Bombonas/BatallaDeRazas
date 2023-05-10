@@ -41,6 +41,7 @@ public class GUI extends JFrame {
         tabStage = new JPanel();
         tabRanking = new JPanel();
         characterPanel = new JPanel();
+        characterPanel.setPreferredSize(new Dimension(300, 100));
         stagePanel = new EventPanel();
         stagePanel.setLayout(new BorderLayout());
         fightPanel = new JPanel();
@@ -77,6 +78,7 @@ public class GUI extends JFrame {
         }
         //Initialize Character panel and prepare it for animations
         tabCharacters = new EventPanel();
+        tabCharacters.setLayout(new GridLayout(3, 3));
         labelCharacters = new JLabel[9];
         labelCharacters[0] = new JLabel();
         for (int i = 0; i < labelCharacters.length; i++) {
@@ -84,7 +86,7 @@ public class GUI extends JFrame {
             tabCharacters.add(labelCharacters[i]);
         }
         //Set a timer to update frames for the animations
-        timer = new Timer(100, new ActionListener() {
+        timer = new Timer(150, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 currentFrame = (currentFrame + 1) % numFrames;
                 for (int i = 0; i < characters.length; i++) {
@@ -96,6 +98,7 @@ public class GUI extends JFrame {
             }
         });
         timer.start();
+        currentFrame = 0;
 
         //Set default stage
         label1 = new JLabel(new ImageIcon(stages[0].getScaledInstance(620, 590,
@@ -104,6 +107,7 @@ public class GUI extends JFrame {
 
         //Label will include selected character
         labelCharacterPanel1 = new JLabel();
+        characterPanel.setLayout(new BoxLayout(characterPanel, BoxLayout.X_AXIS));
         characterPanel.add(labelCharacterPanel1);
 
         //Initialize JTabbedPane with tabs for character, weapon, stage and ranking, as well as size of the tab pane
@@ -165,7 +169,9 @@ public class GUI extends JFrame {
                 label1.setIcon(new ImageIcon(stages[2].getScaledInstance(620, 590,
                         BufferedImage.TYPE_INT_ARGB)));
             }
-            if (currentListener != null) {
+            if (currentListener != null && !e.getSource().equals(labelStages[0])
+            && !e.getSource().equals(labelStages[1])
+            && !e.getSource().equals(labelStages[2])) {
                 timer.removeActionListener(currentListener);
             }
             //Change selected character
