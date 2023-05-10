@@ -3,6 +3,8 @@ package clases;
 import java.util.ArrayList;
 
 public class Warrior {
+	private boolean playable;
+	private String name;
 	private String race;
 	private int hp;
 	private int strength;
@@ -14,16 +16,18 @@ public class Warrior {
 	private int defeatPoints;
 	private int idWarrior;
 	
-	public Warrior(String race, int hp, int strength, int defense, int agility, int speed, ArrayList<Weapon> weapons,
-			String url, int defeatPoints, int idWarrior) {
+	public Warrior(boolean playable, String race, int hp, int strength, int defense, int agility, int speed,
+			String url, int defeatPoints, int idWarrior, String name) {
 		super();
+		weapons = new ArrayList<Weapon>();
+		this.name = name;
+		this.playable = playable;
 		this.race = race;
 		this.hp = hp;
 		this.strength = strength;
 		this.defense = defense;
 		this.agility = agility;
 		this.speed = speed;
-		this.weapons = weapons;
 		this.url = url;
 		this.defeatPoints = defeatPoints;
 		this.idWarrior = idWarrior;
@@ -83,7 +87,7 @@ public class Warrior {
 	}
 
 	public void setWeapons(ArrayList<Weapon> weapons) {
-		this.weapons = weapons;
+		for (Weapon w : weapons) { this.weapons.add(w); }
 	}
 
 	public String getUrl() {
@@ -108,5 +112,20 @@ public class Warrior {
 
 	public void setIdWarrior(int idWarrior) {
 		this.idWarrior = idWarrior;
-	}	
+	}
+
+	public String getName() { return name; }
+
+	public String toString() {
+
+		return name + ":\nWeapons: " + weapons +
+					  "\nRace: " + race +
+					  "\nHealth Points: " + hp +
+					  "\nStrength: " + strength +
+					  "\nDefense: " + defense +
+					  "\nAgility: " + agility +
+					  "\nSpeed: " + speed +
+					  "\nDefeat Points: " + defeatPoints +
+					  "\nID: " + idWarrior;
+	}
 }
