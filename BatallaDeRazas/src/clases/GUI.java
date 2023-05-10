@@ -16,19 +16,26 @@ public class GUI extends JFrame {
     private JPanel mainPanel, tabsPanel, tabWeapons, tabStage, tabRanking, characterPanel, fightPanel;
     private EventPanel stagePanel, tabCharacters;
     private JButton button1;
-    private JLabel label1, labelCharacterPanel1, labelCharacterPanel2;
-    private JLabel[] labelStages, labelWeapons, labelCharacters;
+    private JLabel label1, labelCharacterPanel1, weaponLabel;
+    private JLabel[] labelStages, labelCharacters;
     private JTabbedPane tabPane;
-    private BufferedImage[] stages, weapons, characters, idleAnim;
+    private BufferedImage[] stages, characters;
     private int currentFrame = 0, numFrames = 5;
     private Timer timer;
     private ActionListener currentListener = null;
+    private Player usr, cpu;
+    private WarriorContainer wc;
 
-    public GUI() {
+    public GUI(Player usr, Player cpu, WarriorContainer wc) {
+
+        this.usr = usr;
+        this.cpu = cpu;
+        this.wc = wc;
+
         //Define JFrame properties: size, close operation, title, location
         setSize(1280,720);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setTitle("Hola");
+        setTitle("Race Wars");
         setResizable(false);
         setLocationRelativeTo(null);
 
@@ -50,29 +57,19 @@ public class GUI extends JFrame {
         //Define image paths for stages, characters and weapons
         try {
             stages = new BufferedImage[3];
-            stages[0] = ImageIO.read(new File("BatllaDeRazas/src/background/Summer.jpg"));
-            stages[1] = ImageIO.read(new File("BatllaDeRazas/src/background/desert.jpg"));
-            stages[2] = ImageIO.read(new File("BatllaDeRazas/src/background/winter.jpg"));
-            weapons = new BufferedImage[9];
-            weapons[0] = ImageIO.read(new File("BatllaDeRazas/src/weapons/dagger.png"));
-            weapons[1] = ImageIO.read(new File("BatllaDeRazas/src/weapons/sword.png"));
-            weapons[2] = ImageIO.read(new File("BatllaDeRazas/src/weapons/axe.png"));
-            weapons[3] = ImageIO.read(new File("BatllaDeRazas/src/weapons/dualsword.png"));
-            weapons[4] = ImageIO.read(new File("BatllaDeRazas/src/weapons/scimitar.png"));
-            weapons[5] = ImageIO.read(new File("BatllaDeRazas/src/weapons/bow.png"));
-            weapons[6] = ImageIO.read(new File("BatllaDeRazas/src/weapons/katana.png"));
-            weapons[7] = ImageIO.read(new File("BatllaDeRazas/src/weapons/stabby.png"));
-            weapons[8] = ImageIO.read(new File("BatllaDeRazas/src/weapons/dualaxe.png"));
+            stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
+            stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
+            stages[2] = ImageIO.read(new File("BatallaDeRazas/src/background/winter.jpg"));
             characters = new BufferedImage[9];
-            characters[0] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[1] = ImageIO.read(new File("BatllaDeRazas/src/characters/human1.png"));
-            characters[2] = ImageIO.read(new File("BatllaDeRazas/src/characters/human1.png"));
-            characters[3] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[4] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[5] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[6] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[7] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[8] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
+            characters[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/human1.png"));
+            characters[2] = ImageIO.read(new File("BatallaDeRazas/src/characters/human1.png"));
+            characters[3] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[4] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[5] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[6] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[7] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[8] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -81,22 +78,34 @@ public class GUI extends JFrame {
         tabCharacters.setLayout(new GridLayout(3, 3));
         labelCharacters = new JLabel[9];
         labelCharacters[0] = new JLabel();
+        //Label will include selected character
+        labelCharacterPanel1 = new JLabel();
+        characterPanel.setLayout(new BoxLayout(characterPanel, BoxLayout.X_AXIS));
         for (int i = 0; i < labelCharacters.length; i++) {
             labelCharacters[i] = new JLabel();
             tabCharacters.add(labelCharacters[i]);
         }
         //Set a timer to update frames for the animations
         timer = new Timer(150, new ActionListener() {
+            //ActionListener navigates through the sprite sheet on the X axis to get a new image every 64 pixels
             public void actionPerformed(ActionEvent e) {
                 currentFrame = (currentFrame + 1) % numFrames;
+                //Navigate through the sprite sheet for all 9 characters
                 for (int i = 0; i < characters.length; i++) {
                     BufferedImage subimage = characters[i].getSubimage(currentFrame*64, 0, 64, 32);
                     labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(200,100,
                             BufferedImage.TYPE_INT_ARGB)));
-                    labelCharacters[i].addMouseListener(tabCharacters);
+                }
+                if (currentListener == null) {
+                    BufferedImage subimage2 = characters[0].getSubimage(currentFrame * 64, 0, 64, 32);
+                    labelCharacterPanel1.setIcon(new ImageIcon(subimage2.getScaledInstance(200, 100,
+                            BufferedImage.TYPE_INT_ARGB)));
+                    characterPanel.add(labelCharacterPanel1);
                 }
             }
         });
+        //Add mouse listener to characters tab and start timer
+        tabCharacters.addMouseListener(tabCharacters);
         timer.start();
         currentFrame = 0;
 
@@ -105,10 +114,6 @@ public class GUI extends JFrame {
                 BufferedImage.TYPE_INT_ARGB)));
         stagePanel.add(label1);
 
-        //Label will include selected character
-        labelCharacterPanel1 = new JLabel();
-        characterPanel.setLayout(new BoxLayout(characterPanel, BoxLayout.X_AXIS));
-        characterPanel.add(labelCharacterPanel1);
 
         //Initialize JTabbedPane with tabs for character, weapon, stage and ranking, as well as size of the tab pane
         tabPane = new JTabbedPane();
@@ -136,14 +141,10 @@ public class GUI extends JFrame {
             tabStage.add(labelStages[i]);
         }
 
-        //Fill weapons tab with selectable weapons
-        tabWeapons.setLayout(new GridLayout(3,3));
-        labelWeapons = new JLabel[9];
-        for (int i = 0; i < labelWeapons.length; i++) {
-            labelWeapons[i] = new JLabel(new ImageIcon(weapons[i].getScaledInstance(200, 200,
-                    BufferedImage.TYPE_INT_ARGB)));
-            tabWeapons.add(labelWeapons[i]);
-        }
+        //Fill weapons tab with selectable weapons from user's character and remove previous ones
+        tabWeapons.setLayout(new FlowLayout());
+        removeImageWeapons();
+        setWarriorWeaponsImages();
 
 
 
@@ -152,8 +153,31 @@ public class GUI extends JFrame {
         setVisible(true);
     }
 
+    //Remove weapon images from previous character
+    public void removeImageWeapons() {
+        Component[] previousWeapons = tabWeapons.getComponents();
+        for (Component pw : previousWeapons) {
+            tabWeapons.remove(pw);
+        }
+    }
+    //Load weapons tab images with character's weapons
+    public void setWarriorWeaponsImages() {
+        for (Weapon w: usr.getWarrior().getWeapons()) {
+            weaponLabel = new JLabel();
+            try {
+                BufferedImage weaponImage = ImageIO.read(new File(w.getUrl()));
+                weaponLabel.setIcon(new ImageIcon(weaponImage.getScaledInstance(200, 200,
+                        BufferedImage.TYPE_INT_ARGB)));
+                tabWeapons.add(weaponLabel);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     class EventPanel extends JPanel implements MouseListener {
         public void mouseClicked(MouseEvent e) {
+            Component clickedCharacter = getComponentAt(e.getPoint());
             //Change to stage 1
             if (e.getSource().equals(labelStages[0])) {
                 label1.setIcon(new ImageIcon(stages[0].getScaledInstance(620, 590,
@@ -169,13 +193,18 @@ public class GUI extends JFrame {
                 label1.setIcon(new ImageIcon(stages[2].getScaledInstance(620, 590,
                         BufferedImage.TYPE_INT_ARGB)));
             }
+            //If multiple characters are selected in the characters tab, remove previous actionListeners to avoid
+            //having multiple animations loading
             if (currentListener != null && !e.getSource().equals(labelStages[0])
             && !e.getSource().equals(labelStages[1])
             && !e.getSource().equals(labelStages[2])) {
                 timer.removeActionListener(currentListener);
             }
-            //Change selected character
-            if (e.getSource().equals(labelCharacters[0])) {
+            //Change selected character and animate it
+            if (clickedCharacter.equals(labelCharacters[0])) {
+                usr.setWarrior(wc.getWarriors().get(0));
+                removeImageWeapons();
+                setWarriorWeaponsImages();
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -187,7 +216,7 @@ public class GUI extends JFrame {
                 };
                 timer.addActionListener(currentListener);
             }
-            else if (e.getSource().equals(labelCharacters[1])) {
+            else if (clickedCharacter.equals(labelCharacters[1])) {
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -199,7 +228,7 @@ public class GUI extends JFrame {
                 };
                 timer.addActionListener(currentListener);
             }
-            else if (e.getSource().equals(labelCharacters[2])) {
+            else if (clickedCharacter.equals(labelCharacters[2])) {
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -211,7 +240,7 @@ public class GUI extends JFrame {
                 };
                 timer.addActionListener(currentListener);
             }
-            else if (e.getSource().equals(labelCharacters[3])) {
+            else if (clickedCharacter.equals(labelCharacters[3])) {
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -223,7 +252,7 @@ public class GUI extends JFrame {
                 };
                 timer.addActionListener(currentListener);
             }
-            else if (e.getSource().equals(labelCharacters[4])) {
+            else if (clickedCharacter.equals(labelCharacters[4])) {
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -235,7 +264,7 @@ public class GUI extends JFrame {
                 };
                 timer.addActionListener(currentListener);
             }
-            else if (e.getSource().equals(labelCharacters[5])) {
+            else if (clickedCharacter.equals(labelCharacters[5])) {
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -247,7 +276,7 @@ public class GUI extends JFrame {
                 };
                 timer.addActionListener(currentListener);
             }
-            else if (e.getSource().equals(labelCharacters[6])) {
+            else if (clickedCharacter.equals(labelCharacters[6])) {
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -259,7 +288,7 @@ public class GUI extends JFrame {
                 };
                 timer.addActionListener(currentListener);
             }
-            else if (e.getSource().equals(labelCharacters[7])) {
+            else if (clickedCharacter.equals(labelCharacters[7])) {
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -271,7 +300,7 @@ public class GUI extends JFrame {
                 };
                 timer.addActionListener(currentListener);
             }
-            else if (e.getSource().equals(labelCharacters[8])) {
+            else if (clickedCharacter.equals(labelCharacters[8])) {
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {

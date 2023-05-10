@@ -14,6 +14,8 @@ public class Main {
 		Player cpu = new Player(warriorList.getRandomWarrior(), "CPU");
 		Player usr = new Player(warriorList.getRandomWarrior(), "USR");
 
+		new GUI(usr, cpu, warriorList);
+
 		// Instance the ArrayList to put both player and manage the turns
 		ArrayList<Player> playerList = new ArrayList<Player>();
 		playerList.add(usr);
