@@ -1,14 +1,17 @@
 package clases;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 public class Player {
+    private String name;
 	private Warrior warrior;
 	private Weapon weapon;
 	private int currentHP;
 	
-	public Player(Warrior w) {
+	public Player(Warrior w, String name) {
 		Random rand = new Random();
+        this.name = name;
 		warrior = w;
 		weapon = w.getWeapons().get(rand.nextInt(w.getWeapons().size()));
 		currentHP = w.getHp();
@@ -19,7 +22,6 @@ public class Player {
         
         // Set the atack chance 
         int missChance = rand.nextInt(100)+1;
-        System.out.println(missChance);
         if((warrior.getAgility() + weapon.getAgility())*10 > missChance) {
             System.out.println("El ataque ha acertado");
             
@@ -56,6 +58,11 @@ public class Player {
         this.weapon = weapon;
     }
 
+    public void setWeapon() { // Method to set a random weapon
+        Random rand = new Random();
+        weapon = warrior.getWeapons().get(rand.nextInt(warrior.getWeapons().size()));
+    }
+
     public int getCurrentHP() {
         return currentHP;
     }
@@ -64,9 +71,14 @@ public class Player {
         this.currentHP = currentHP;
     }
 
-    
+    public String getName() { return name; }
+
+    public void setName(String name) { this.name = name; }
+
     public void swapTurn() {
         
     }
+
+    public String toString() { return name + ": " + warrior.getName() + "\\" + warrior.getRace() + " - " + weapon.getName(); }
 	
 }

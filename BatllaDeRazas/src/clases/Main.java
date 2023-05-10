@@ -7,15 +7,14 @@ import java.util.Scanner;
 public class Main {
 
 	public static void main(String[] args) {
+		//Instance the warriors container
 		WarriorContainer warriorList = new WarriorContainer();
 
-		System.out.println(warriorList);
+		// Instance the players
+		Player cpu = new Player(warriorList.getRandomWarrior(), "CPU");
+		Player usr = new Player(warriorList.getRandomWarrior(), "USR");
 
-		Random rand = new Random();
-		
-		Player cpu = new Player(warriorList.getWarriors().get(rand.nextInt(warriorList.getWarriors().size())));
-		Player usr = new Player(warriorList.getWarriors().get(rand.nextInt(warriorList.getWarriors().size())));
-		
+		// Instance the ArrayList to put both player and manage the turns
 		ArrayList<Player> playerList = new ArrayList<Player>();
 		playerList.add(usr);
 		playerList.add(cpu);
@@ -37,26 +36,28 @@ public class Main {
 					cpu.setCurrentHP(cpu.getWarrior().getHp());
 					usr.setCurrentHP(usr.getWarrior().getHp());
 					
-					System.out.println("Empieza el combate entre:\n" + usr.getWarrior().getName() + "\n" + cpu.getWarrior().getName());
+					System.out.println("Empieza el combate entre:\n" + usr + "\n" + cpu);
 					System.out.println("\nPULSA ENTER PARA EMPEZAR");
 					
 					int i = 0;
-					
+
+					// Loop of the battle
 					while (cpu.getCurrentHP() > 0 & usr.getCurrentHP() > 0) {
 						
 						playerList.get(i).atack(playerList.get((i + 1)%2));
 						
 						i = (i + 1) % 2;
-						
-						System.out.println("Vida CPU = " + cpu.getCurrentHP());
-						System.out.println("Vida USR = " + usr.getCurrentHP());
+
+						System.out.println("Health Points " + usr.getName() + " = " + usr.getCurrentHP());
+						System.out.println("Health Points " + cpu.getName() + " = " + cpu.getCurrentHP());
 						
 						System.out.println("ENTER PARA CONTINUAR");
 						
 						sc.nextLine();
 						
 					}
-					
+
+					// TODO Cambiar el final de partida
 					System.out.println("Fin de partida:\n1-Seguir Jugandon\n2-Salir");
 					while (true) {
 						if (sc.hasNextInt()) {
@@ -69,14 +70,14 @@ public class Main {
 					switch (opt) {
 					case 1: {
 						if (usr.getCurrentHP() > 0) {
-							cpu.setWarrior(warriorList.getWarriors().get(rand.nextInt(3)));
-							cpu.setWeapon(cpu.getWarrior().getWeapons().get(rand.nextInt(3)));
+							cpu.setWarrior(warriorList.getRandomWarrior());
+							cpu.setWeapon();
 						}
 						else {
-							cpu.setWarrior(warriorList.getWarriors().get(rand.nextInt(3)));
-							cpu.setWeapon(cpu.getWarrior().getWeapons().get(rand.nextInt(3)));
+							cpu.setWarrior(warriorList.getRandomWarrior());
+							cpu.setWeapon();
 							
-							usr.setWeapon(usr.getWarrior().getWeapons().get(rand.nextInt(3)));
+							usr.setWeapon();
 						}
 						break;
 					}

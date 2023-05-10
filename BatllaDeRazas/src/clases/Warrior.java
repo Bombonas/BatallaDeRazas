@@ -16,9 +16,10 @@ public class Warrior {
 	private int defeatPoints;
 	private int idWarrior;
 	
-	public Warrior(boolean playable, String race, int hp, int strength, int defense, int agility, int speed, ArrayList<Weapon> weapons,
+	public Warrior(boolean playable, String race, int hp, int strength, int defense, int agility, int speed,
 			String url, int defeatPoints, int idWarrior, String name) {
 		super();
+		weapons = new ArrayList<Weapon>();
 		this.name = name;
 		this.playable = playable;
 		this.race = race;
@@ -27,7 +28,6 @@ public class Warrior {
 		this.defense = defense;
 		this.agility = agility;
 		this.speed = speed;
-		this.weapons = weapons;
 		this.url = url;
 		this.defeatPoints = defeatPoints;
 		this.idWarrior = idWarrior;
@@ -87,7 +87,7 @@ public class Warrior {
 	}
 
 	public void setWeapons(ArrayList<Weapon> weapons) {
-		this.weapons = weapons;
+		for (Weapon w : weapons) { this.weapons.add(w); }
 	}
 
 	public String getUrl() {
@@ -118,11 +118,14 @@ public class Warrior {
 
 	public String toString() {
 
-		String data = name + ": ";
-
-		for (Weapon w : weapons) {
-			data += w + ", ";
-		}
-		return data;
+		return name + ":\nWeapons: " + weapons +
+					  "\nRace: " + race +
+					  "\nHealth Points: " + hp +
+					  "\nStrength: " + strength +
+					  "\nDefense: " + defense +
+					  "\nAgility: " + agility +
+					  "\nSpeed: " + speed +
+					  "\nDefeat Points: " + defeatPoints +
+					  "\nID: " + idWarrior;
 	}
 }

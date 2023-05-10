@@ -8,20 +8,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class WarriorContainer {
 	private ArrayList<Warrior> warriors;
 	
 	public WarriorContainer() {
-
-		// Total de armas
-		ArrayList<Weapon> weaponList = new ArrayList<Weapon>();
-		for (Weapon w : new WeaponContainer().getWeapons()) {
-			weaponList.add(w);
-		}
-
-		// Armas de cada jugador
-		ArrayList<Weapon> weaponAvailable = new ArrayList<Weapon>();
 
 		warriors = new ArrayList<Warrior>();
 
@@ -29,57 +21,68 @@ public class WarriorContainer {
 		String usr = "root";
 		String pas = "1234";
 
-		String update = "";
-		String query = "";
-		String data = "";
+		// ArrayList with all the weapons
+		ArrayList<Weapon> weaponList = new ArrayList<Weapon>();
+		for (Weapon w : new WeaponContainer().getWeapons()) {
+			weaponList.add(w);
+		}
+
+		// ArrayList to fill each warrior weapons
+		ArrayList<Weapon> weaponAvailable = new ArrayList<Weapon>();
 
 		try {
-			// Ejercicio A
-			// Cargar driver
+			// Start driver
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			System.out.println("Driver cargado correctamente");
+			System.out.println("Driver charged successfully");
 
-			// Crear conexion DDBB
+			// Create DB connection
 			Connection conn = DriverManager.getConnection(url, usr, pas);
-			System.out.println("Conexion creada correctamente");
+			System.out.println("Connection created successfully");
 
-			// Instanciar objeto de la clase Statement
-			Statement stmnt1 = conn.createStatement();
-			Statement stmnt2 = conn.createStatement();
+			// Instance the statements objects with the connections
+			Statement stmnt1 = conn.createStatement(); // This statement is used to call the warriors query
+			Statement stmnt2 = conn.createStatement(); // This Statement is used to call the weapon-available query
 
-			// Iniciamos un resultSet para cojer los warriors
+			// This Result Set call the query that have all the values for the Warriors class
 			ResultSet rs1 = stmnt1.executeQuery("SELECT w.playable, r.race, w.hp, w.strength, w.defense, " +
 												"w.agility, w.speed, w.image_path, w.defeatPoints, w.id, " +
 												"w.name, w.race_id\n" +
 												"FROM warriors w\n" +
 												"INNER JOIN races r on w.race_id = r.id;");
 
-			int race = 0; // int para saber la raza del warrior
+			int race = 0; // int keep the actual warrior race
+
+			int position = 0; // int to know the position in ArrayList warriors
 
 			while (rs1.next()) {
-				// Guardamos el id de raza del luchador
+				// Keep the race_id of the actual warrior
 				race = rs1.getInt(12);
 
-				// Limpiamos la lista de armas
+				// Clear the ArrayList weaponAvailable
 				weaponAvailable.clear();
 
-				// Creamos una consulta para comprobar las armas disponibles de cada luchador
+				// Create the query to match warrior with his weapons
 				ResultSet rs2 = stmnt2.executeQuery("SELECT * FROM weapon_available WHERE race_id = " + race);
-				// Iteramos sobre rs2 para sacar la lsita de armas disponibles
+				// Iterator used to fill the ArrayList weaponAvailable
 				while (rs2.next()) {
 					weaponAvailable.add(weaponList.get(rs2.getInt(1) - 1));
 				}
 
+				// Instance the new warrior in the ArrayList warriors using the first query(rs1)
 				warriors.add(new Warrior(rs1.getBoolean(1), rs1.getString(2),
 						rs1.getInt(3), rs1.getInt(4), rs1.getInt(5),
-						rs1.getInt(6), rs1.getInt(7), weaponAvailable, rs1.getString(8),
+						rs1.getInt(6), rs1.getInt(7), rs1.getString(8),
 						rs1.getInt(9), rs1.getInt(10), rs1.getString(11)));
+
+				// Set the weapons list of this warrior then sum one in the variable position
+				warriors.get(position).setWeapons(weaponAvailable);
+				position ++;
 			}
 
 		} catch (ClassNotFoundException e) {
-			System.out.println("Driver no cargado correctamente");
+			System.out.println("Driver not charged successfully");
 		} catch (SQLException e) {
-			System.out.println("Conexion no creada correctamente");
+			System.out.println("Connection not created successfully");
 		}
 
 	}
@@ -87,6 +90,16 @@ public class WarriorContainer {
 	
 	public ArrayList<Warrior> getWarriors() {
 		return warriors;
+	}
+
+	public Warrior getRandomWarrior() { // Method to get a random warrior from the ArrayList
+		Warrior w;
+
+		Random rand = new Random();
+
+		w = warriors.get(rand.nextInt(warriors.size()));
+
+		return w;
 	}
 
 	public String toString() {
