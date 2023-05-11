@@ -50,29 +50,29 @@ public class GUI extends JFrame {
         //Define image paths for stages, characters and weapons
         try {
             stages = new BufferedImage[3];
-            stages[0] = ImageIO.read(new File("BatllaDeRazas/src/background/Summer.jpg"));
-            stages[1] = ImageIO.read(new File("BatllaDeRazas/src/background/desert.jpg"));
-            stages[2] = ImageIO.read(new File("BatllaDeRazas/src/background/winter.jpg"));
+            stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
+            stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
+            stages[2] = ImageIO.read(new File("BatallaDeRazas/src/background/winter.jpg"));
             weapons = new BufferedImage[9];
-            weapons[0] = ImageIO.read(new File("BatllaDeRazas/src/weapons/dagger.png"));
-            weapons[1] = ImageIO.read(new File("BatllaDeRazas/src/weapons/sword.png"));
-            weapons[2] = ImageIO.read(new File("BatllaDeRazas/src/weapons/axe.png"));
-            weapons[3] = ImageIO.read(new File("BatllaDeRazas/src/weapons/dualsword.png"));
-            weapons[4] = ImageIO.read(new File("BatllaDeRazas/src/weapons/scimitar.png"));
-            weapons[5] = ImageIO.read(new File("BatllaDeRazas/src/weapons/bow.png"));
-            weapons[6] = ImageIO.read(new File("BatllaDeRazas/src/weapons/katana.png"));
-            weapons[7] = ImageIO.read(new File("BatllaDeRazas/src/weapons/stabby.png"));
-            weapons[8] = ImageIO.read(new File("BatllaDeRazas/src/weapons/dualaxe.png"));
+            weapons[0] = ImageIO.read(new File("BatallaDeRazas/src/weapons/dagger.png"));
+            weapons[1] = ImageIO.read(new File("BatallaDeRazas/src/weapons/sword.png"));
+            weapons[2] = ImageIO.read(new File("BatallaDeRazas/src/weapons/axe.png"));
+            weapons[3] = ImageIO.read(new File("BatallaDeRazas/src/weapons/dualsword.png"));
+            weapons[4] = ImageIO.read(new File("BatallaDeRazas/src/weapons/scimitar.png"));
+            weapons[5] = ImageIO.read(new File("BatallaDeRazas/src/weapons/bow.png"));
+            weapons[6] = ImageIO.read(new File("BatallaDeRazas/src/weapons/katana.png"));
+            weapons[7] = ImageIO.read(new File("BatallaDeRazas/src/weapons/stabby.png"));
+            weapons[8] = ImageIO.read(new File("BatallaDeRazas/src/weapons/dualaxe.png"));
             characters = new BufferedImage[9];
-            characters[0] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[1] = ImageIO.read(new File("BatllaDeRazas/src/characters/human1.png"));
-            characters[2] = ImageIO.read(new File("BatllaDeRazas/src/characters/human1.png"));
-            characters[3] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[4] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[5] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[6] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[7] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
-            characters[8] = ImageIO.read(new File("BatllaDeRazas/src/characters/dwarf1.png"));
+            characters[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/human1.png"));
+            characters[2] = ImageIO.read(new File("BatallaDeRazas/src/characters/human1.png"));
+            characters[3] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[4] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[5] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[6] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[7] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[8] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

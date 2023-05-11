@@ -22,6 +22,7 @@ public class Main {
 		Scanner sc = new Scanner(System.in);
 		
 		boolean play = true;
+
 		
 		int opt = 0;
 		
@@ -33,63 +34,88 @@ public class Main {
 				
 				switch (opt) {
 				case 1: {
-					cpu.setCurrentHP(cpu.getWarrior().getHp());
-					usr.setCurrentHP(usr.getWarrior().getHp());
-					
-					System.out.println("Empieza el combate entre:\n" + usr + "\n" + cpu);
-					System.out.println("\nPULSA ENTER PARA EMPEZAR");
-					
-					int i = 0;
+					boolean battle = true;
+					RoundsInfo pruebaSubida = new RoundsInfo(cpu, usr);
 
-					// Loop of the battle
-					while (cpu.getCurrentHP() > 0 & usr.getCurrentHP() > 0) {
-						
-						playerList.get(i).atack(playerList.get((i + 1)%2));
-						
-						i = (i + 1) % 2;
+					while (battle) {
+						cpu.setCurrentHP(cpu.getWarrior().getHp());
+						usr.setCurrentHP(usr.getWarrior().getHp());
 
-						System.out.println("Health Points " + usr.getName() + " = " + usr.getCurrentHP());
-						System.out.println("Health Points " + cpu.getName() + " = " + cpu.getCurrentHP());
-						
-						System.out.println("ENTER PARA CONTINUAR");
-						
-						sc.nextLine();
-						
-					}
+						System.out.println("Empieza el combate entre:\n" + usr + "\n" + cpu);
+						System.out.println("\nPULSA ENTER PARA EMPEZAR");
 
-					// TODO Cambiar el final de partida
-					System.out.println("Fin de partida:\n1-Seguir Jugandon\n2-Salir");
-					while (true) {
-						if (sc.hasNextInt()) {
-							opt = sc.nextInt();
-							break;
+						int i = 0;
+
+						// Loop of the battle
+						while (cpu.getCurrentHP() > 0 & usr.getCurrentHP() > 0) {
+
+							playerList.get(i).atack(playerList.get((i + 1) % 2));
+
+							i = (i + 1) % 2;
+
+							System.out.println("Health Points " + usr.getName() + " = " + usr.getCurrentHP());
+							System.out.println("Health Points " + cpu.getName() + " = " + cpu.getCurrentHP());
+
+							System.out.println("ENTER PARA CONTINUAR");
+
+							sc.nextLine();
+
 						}
-						System.out.println("Error");
-					}
-						
-					switch (opt) {
-					case 1: {
+
 						if (usr.getCurrentHP() > 0) {
-							cpu.setWarrior(warriorList.getRandomWarrior());
-							cpu.setWeapon();
+							pruebaSubida.sumInjuriesCaused(cpu.getWarrior().getHp() - cpu.getCurrentHP());
+							pruebaSubida.sumInjuriesSuffered(usr.getWarrior().getHp() - usr.getCurrentHP());
+
+							pruebaSubida.updateData(cpu.getWarrior().getDefeatPoints() + cpu.getWeapon().getDefeatPoints());
+
 						}
-						else {
-							cpu.setWarrior(warriorList.getRandomWarrior());
-							cpu.setWeapon();
-							
-							usr.setWeapon();
+						else{
+							pruebaSubida.sumInjuriesCaused(cpu.getWarrior().getHp() - cpu.getCurrentHP());
+							pruebaSubida.sumInjuriesSuffered(usr.getWarrior().getHp() - usr.getCurrentHP());
+
+							pruebaSubida.updateData();
+
 						}
-						break;
+
+						// TODO Cambiar el final de partida
+						System.out.println("Fin de partida:\n1-Seguir Jugandon\n2-Salir");
+						while (true) {
+							if (sc.hasNextInt()) {
+								opt = sc.nextInt();
+								break;
+							}
+							System.out.println("Error");
+						}
+
+						switch (opt) {
+							case 1: {
+								if (usr.getCurrentHP() > 0) {
+									cpu.setWarrior(warriorList.getRandomWarrior());
+									cpu.setWeapon();
+
+									pruebaSubida.setIdOpponent(cpu.getWarrior().getIdWarrior());
+									pruebaSubida.setIdOpponentWeapon(cpu.getWeapon().getIdWeapon());
+
+								} else {
+									cpu.setWarrior(warriorList.getRandomWarrior());
+									cpu.setWeapon();
+
+									usr.setWeapon();
+
+									battle = false;
+								}
+								break;
+							}
+							case 2: {
+								System.out.println("Se han subido tus datos ;)");
+								battle = false;
+								break;
+							}
+							default:
+								System.out.println("Opcion fuera de rango");
+						}
+
 					}
-					case 2: {
-						System.out.println("Se han subido tus datos ;)\nCerrando juego");
-						play = false;
-						break;
-					}
-					default:
-						System.out.println("Opcion fuera de rango");
-					}
-					
 					break;
 				}
 				case 2: {

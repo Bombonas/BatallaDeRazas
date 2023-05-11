@@ -49,6 +49,7 @@ public class DataBaseConn {
 
         try {
             stmnt.executeUpdate(update);
+            System.out.println("Update has occurred");
         } catch (SQLException e) {
             System.out.println("Error in update");
         }
