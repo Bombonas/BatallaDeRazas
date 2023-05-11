@@ -13,11 +13,12 @@ import java.io.File;
 import java.io.IOException;
 
 public class GUI extends JFrame {
-    private JPanel mainPanel, tabsPanel, tabWeapons, tabStage, tabRanking, characterPanel, fightPanel;
+    private JPanel mainPanel, tabsPanel, tabStage, tabRanking, characterPanel, fightPanel;
     private EventPanel stagePanel, tabCharacters;
-    private JButton button1;
-    private JLabel label1, labelCharacterPanel1, weaponLabel;
-    private JLabel[] labelStages, labelCharacters;
+    private EventWeapons tabWeapons;
+    private JButton fightButton;
+    private JLabel label1, labelCharacterPanel1;
+    private JLabel[] labelStages, labelCharacters, weaponLabel;
     private JTabbedPane tabPane;
     private BufferedImage[] stages, characters;
     private int currentFrame = 0, numFrames = 5;
@@ -25,6 +26,7 @@ public class GUI extends JFrame {
     private ActionListener currentListener = null;
     private Player usr, cpu;
     private WarriorContainer wc;
+    private String[] paths;
 
     public GUI(Player usr, Player cpu, WarriorContainer wc) {
 
@@ -44,7 +46,8 @@ public class GUI extends JFrame {
         mainPanel.setLayout(new BorderLayout());
         tabsPanel = new JPanel();
         tabsPanel.setLayout(new BoxLayout(tabsPanel, BoxLayout.Y_AXIS));
-        tabWeapons = new JPanel();
+        tabWeapons = new EventWeapons();
+        tabWeapons.addMouseListener(tabWeapons);
         tabStage = new JPanel();
         tabRanking = new JPanel();
         characterPanel = new JPanel();
@@ -146,6 +149,10 @@ public class GUI extends JFrame {
         removeImageWeapons();
         setWarriorWeaponsImages();
 
+        //Initialize fight button and add it to fightPanel
+        fightButton = new JButton("Fight!");
+        fightPanel.add(fightButton);
+
 
 
         //Add main panel to JFrame and set visible
@@ -162,13 +169,19 @@ public class GUI extends JFrame {
     }
     //Load weapons tab images with character's weapons
     public void setWarriorWeaponsImages() {
+        int i = 0;
+        weaponLabel = new JLabel[usr.getWarrior().getWeapons().size()];
+        paths = new String[usr.getWarrior().getWeapons().size()];
         for (Weapon w: usr.getWarrior().getWeapons()) {
-            weaponLabel = new JLabel();
+            weaponLabel[i] = new JLabel();
+            paths[i] = w.getUrl();
             try {
-                BufferedImage weaponImage = ImageIO.read(new File(w.getUrl()));
-                weaponLabel.setIcon(new ImageIcon(weaponImage.getScaledInstance(200, 200,
+                File path = new File(w.getUrl());
+                BufferedImage weaponImage = ImageIO.read(path);
+                weaponLabel[i].setIcon(new ImageIcon(weaponImage.getScaledInstance(200, 200,
                         BufferedImage.TYPE_INT_ARGB)));
-                tabWeapons.add(weaponLabel);
+                tabWeapons.add(weaponLabel[i]);
+                i++;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -314,11 +327,32 @@ public class GUI extends JFrame {
             }
         }
         public void mousePressed(MouseEvent e) {}
-
         public void mouseReleased(MouseEvent e) {}
-
         public void mouseEntered(MouseEvent e) {}
+        public void mouseExited(MouseEvent e) {}
+    }
+    //Define JPanel with MouseListener for Weapons tab
+    class EventWeapons extends JPanel implements MouseListener {
 
+        public void mouseClicked(MouseEvent e) {
+            //clickedWeapon gets the component at the point the mouse is clicked
+            Component clickedWeapon = getComponentAt(e.getPoint());
+            if (e.getSource().equals(tabWeapons)) {
+                //Iterate through weapon labels and compare their paths with every weapon available for the warrior
+                for (int i = 0; i < weaponLabel.length; i++) {
+                    if (clickedWeapon.equals(weaponLabel[i])) {
+                        if (paths[i].equals(usr.getWarrior().getWeapons().get(i).getUrl())) {
+                            System.out.println(usr.getWeapon());
+                            usr.setWeapon(usr.getWarrior().getWeapons().get(i));
+                            System.out.println(usr.getWeapon());
+                        }
+                    }
+                }
+            }
+        }
+        public void mousePressed(MouseEvent e) {}
+        public void mouseReleased(MouseEvent e) {}
+        public void mouseEntered(MouseEvent e) {}
         public void mouseExited(MouseEvent e) {}
     }
 }
