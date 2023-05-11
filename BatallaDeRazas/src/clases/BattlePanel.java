@@ -10,9 +10,9 @@ import java.io.IOException;
 public class BattlePanel extends JPanel {
     private BufferedImage background, player, enemy;
 
-    public BattlePanel(){
+    public BattlePanel(String pathBackground){
         try {
-            background = ImageIO.read(new File("BatallaDeRazas/src/imgs/background.jpg"));
+            background = ImageIO.read(new File(pathBackground));
         }catch (IOException e) {
             System.out.println("Imagen no encontrada");
         }

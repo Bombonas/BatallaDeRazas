@@ -16,30 +16,32 @@ public class Player {
 		warrior = w;
 		weapon = w.getWeapons().get(rand.nextInt(w.getWeapons().size()));
 		currentHP = w.getHp();
+        items = new ArrayList<Weapon>();
 	}
 	
-	public void atack(Player defender) {
+	public String atack(Player defender) {
 		Random rand = new Random();
-		
+		String ret = "";
 		// Set the atack chance 
 		int missChance = rand.nextInt(100)+1;
 		if(getTotalAgility()*10 >= missChance) {
-			System.out.println("El ataque ha acertado");
+			ret += "El ataque ha acertado";
 			
 			int dodgeChance = rand.nextInt(50)+1;
 			if(defender.getTotalAgility() < dodgeChance) {
 				int atckDmg = getTotalStrength() - defender.getTotalDefense();
-				System.out.println("El defensor se ha comido " + atckDmg + " de daño vaya subnormal");
+                ret += "\nEl defensor ha sufrido " + atckDmg + " de daño";
 				if(defender.getCurrentHP()-atckDmg < 0) {
 					defender.setCurrentHP(0);
 				}else {
 					defender.setCurrentHP(defender.getCurrentHP()-atckDmg);
 				}
 				
-			}else System.out.println("El defensor ha esquivado el ataque");
+			}else ret += "\nEl defensor ha esquivado el ataque";
 			
-		}else System.out.println("El ataque ha fallado");
+		}else  ret += "El ataque ha fallado";
 
+        return ret + "\n\n";
 	}
 	
 	public boolean swapTurn(Player defender) {
