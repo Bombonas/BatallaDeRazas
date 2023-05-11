@@ -12,12 +12,14 @@ public class Warrior {
 	private int agility;
 	private int speed;
 	private ArrayList<Weapon> weapons;
-	private String url;
+	private String urlIdle;
+	private String urlAttack;
+	private String urlDeath;
 	private int defeatPoints;
 	private int idWarrior;
 	
 	public Warrior(boolean playable, String race, int hp, int strength, int defense, int agility, int speed,
-			String url, int defeatPoints, int idWarrior, String name) {
+			String urlIdle, String urlAttack, String urlDeath, int defeatPoints, int idWarrior, String name) {
 		super();
 		weapons = new ArrayList<Weapon>();
 		this.name = name;
@@ -28,7 +30,9 @@ public class Warrior {
 		this.defense = defense;
 		this.agility = agility;
 		this.speed = speed;
-		this.url = url;
+		this.urlIdle = urlIdle;
+		this.urlAttack = urlAttack;
+		this.urlDeath = urlDeath;
 		this.defeatPoints = defeatPoints;
 		this.idWarrior = idWarrior;
 	}
@@ -90,12 +94,16 @@ public class Warrior {
 		for (Weapon w : weapons) { this.weapons.add(w); }
 	}
 
-	public String getUrl() {
-		return url;
+	public String getUrlIdle() {
+		return urlIdle;
 	}
 
-	public void setUrl(String url) {
-		this.url = url;
+	public String getUrlAttack() {
+		return urlAttack;
+	}
+
+	public String getUrlDeath() {
+		return urlDeath;
 	}
 
 	public int getDefeatPoints() {
@@ -126,6 +134,7 @@ public class Warrior {
 					  "\nAgility: " + agility +
 					  "\nSpeed: " + speed +
 					  "\nDefeat Points: " + defeatPoints +
-					  "\nID: " + idWarrior;
+					  "\nID: " + idWarrior +
+					  "\nURL's: " + urlIdle + " - " + urlAttack + " - " + urlDeath;
 	}
 }
