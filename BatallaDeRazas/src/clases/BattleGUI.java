@@ -20,8 +20,11 @@ public class BattleGUI extends JFrame {
     private BufferedImage background;
     private boolean tAreaVisible;
     private JScrollPane scrollPane;
+    private Player usr, cpu;
 
-    public BattleGUI(){
+    public BattleGUI(Player usr, Player cpu){
+        this.usr = usr;
+        this.cpu = cpu;
         setSize(1280, 720);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);

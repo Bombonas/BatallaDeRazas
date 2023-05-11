@@ -15,7 +15,7 @@ public class Player {
 		Random rand = new Random();
         this.name = name;
 		warrior = w;
-		weapon = w.getWeapons().get(rand.nextInt(w.getWeapons().size()));
+		weapon = null;
 		currentHP = w.getHp();
 	}
 	

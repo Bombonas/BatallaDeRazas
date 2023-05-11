@@ -11,6 +11,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class GUI extends JFrame {
     private JPanel mainPanel, tabsPanel, tabStage, tabRanking, characterPanel, fightPanel;
@@ -21,11 +22,12 @@ public class GUI extends JFrame {
     private JLabel[] labelStages, labelCharacters, weaponLabel;
     private JTabbedPane tabPane;
     private BufferedImage[] stages, characters;
-    private int currentFrame = 0, numFrames = 5;
+    private int currentFrame = 0, numFrames = 10;
     private Timer timer;
     private ActionListener currentListener = null;
     private Player usr, cpu;
     private WarriorContainer wc;
+    private ArrayList<CharacterAnimationDetails> characterAnim;
     private String[] paths;
 
     public GUI(Player usr, Player cpu, WarriorContainer wc) {
@@ -64,18 +66,47 @@ public class GUI extends JFrame {
             stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
             stages[2] = ImageIO.read(new File("BatallaDeRazas/src/background/winter.jpg"));
             characters = new BufferedImage[9];
-            characters[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
-            characters[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/human1.png"));
-            characters[2] = ImageIO.read(new File("BatallaDeRazas/src/characters/human1.png"));
-            characters[3] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
-            characters[4] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
-            characters[5] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/human1.png"));
+            characters[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/human2.png"));
+            characters[2] = ImageIO.read(new File("BatallaDeRazas/src/characters/human3.png"));
+            characters[3] = ImageIO.read(new File("BatallaDeRazas/src/characters/elf1.png"));
+            characters[4] = ImageIO.read(new File("BatallaDeRazas/src/characters/elf2.png"));
+            characters[5] = ImageIO.read(new File("BatallaDeRazas/src/characters/elf3.png"));
             characters[6] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
-            characters[7] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
-            characters[8] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
+            characters[7] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf2.png"));
+            characters[8] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf3.png"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        characterAnim = new ArrayList<CharacterAnimationDetails>();
+        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(0).getName(), characters[0], 4,
+                150, 200, 190));
+        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(1).getName(), characters[1], 10,
+                150, 162, 150));
+        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(2).getName(), characters[2], 10,
+                150, 140, 120));
+        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(3).getName(), characters[3], 8,
+                150,150, 150));
+        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(4).getName(), characters[4], 10,
+                150, 100, 100));
+        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(5).getName(), characters[5], 10,
+                150, 126, 126));
+        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(6).getName(), characters[6], 5,
+                150, 64, 32));
+        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(7).getName(), characters[7], 5,
+                150, 64, 32));
+        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(8).getName(), characters[8], 5,
+                150, 64, 32));
+
+        /*
+        for (int i = 0; i < characters.length; i++) {
+            BufferedImage subimage = characters[0].getSubimage(currentFrame*200, 0, 200, 200);
+            BufferedImage subimage = characters[1].getSubimage(currentFrame*162, 0, 162, 150);
+            BufferedImage subimage = characters[2].getSubimage(currentFrame*140, 0, 140, 100);
+            labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(240,240,
+                    BufferedImage.TYPE_INT_ARGB)));
+        }
+         */
         //Initialize Character panel and prepare it for animations
         tabCharacters = new EventPanel();
         tabCharacters.setLayout(new GridLayout(3, 3));
@@ -84,6 +115,7 @@ public class GUI extends JFrame {
         //Label will include selected character
         labelCharacterPanel1 = new JLabel();
         characterPanel.setLayout(new BoxLayout(characterPanel, BoxLayout.X_AXIS));
+        characterPanel.add(labelCharacterPanel1);
         for (int i = 0; i < labelCharacters.length; i++) {
             labelCharacters[i] = new JLabel();
             tabCharacters.add(labelCharacters[i]);
@@ -92,18 +124,17 @@ public class GUI extends JFrame {
         timer = new Timer(150, new ActionListener() {
             //ActionListener navigates through the sprite sheet on the X axis to get a new image every 64 pixels
             public void actionPerformed(ActionEvent e) {
-                currentFrame = (currentFrame + 1) % numFrames;
-                //Navigate through the sprite sheet for all 9 characters
-                for (int i = 0; i < characters.length; i++) {
-                    BufferedImage subimage = characters[i].getSubimage(currentFrame*64, 0, 64, 32);
-                    labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(200,100,
-                            BufferedImage.TYPE_INT_ARGB)));
-                }
-                if (currentListener == null) {
-                    BufferedImage subimage2 = characters[0].getSubimage(currentFrame * 64, 0, 64, 32);
-                    labelCharacterPanel1.setIcon(new ImageIcon(subimage2.getScaledInstance(200, 100,
-                            BufferedImage.TYPE_INT_ARGB)));
-                    characterPanel.add(labelCharacterPanel1);
+                int i = 0;
+                for (CharacterAnimationDetails ch: characterAnim) {
+                    BufferedImage subimage = ch.updateFrame();
+                    if (i <= 5) {
+                        labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
+                                BufferedImage.TYPE_INT_ARGB)));
+                    }else{
+                        labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(150, 70,
+                                BufferedImage.TYPE_INT_ARGB)));
+                    }
+                    i++;
                 }
             }
         });
@@ -152,7 +183,23 @@ public class GUI extends JFrame {
         //Initialize fight button and add it to fightPanel
         fightButton = new JButton("Fight!");
         fightPanel.add(fightButton);
+        fightButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    if (usr.getWeapon() == null) {
+                        throw new NoWeaponSelected();
+                    }else{
+                        GUI.super.dispose();
+                        new BattleGUI(usr, cpu);
+                    }
+                } catch (NoWeaponSelected ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                } {
 
+                }
+            }
+        });
 
 
         //Add main panel to JFrame and set visible
@@ -221,105 +268,120 @@ public class GUI extends JFrame {
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        currentFrame = (currentFrame + 1) % numFrames;
-                        BufferedImage subimage = characters[0].getSubimage(currentFrame*64, 0, 64, 32);
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(200,100,
+                        BufferedImage subimage = characterAnim.get(0).updateFrame();
+                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }
                 };
                 timer.addActionListener(currentListener);
             }
             else if (clickedCharacter.equals(labelCharacters[1])) {
+                usr.setWarrior(wc.getWarriors().get(1));
+                removeImageWeapons();
+                setWarriorWeaponsImages();
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        currentFrame = (currentFrame + 1) % numFrames;
-                        BufferedImage subimage = characters[1].getSubimage(currentFrame*64, 0, 64, 32);
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(200,100,
+                        BufferedImage subimage = characterAnim.get(1).updateFrame();
+                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }
                 };
                 timer.addActionListener(currentListener);
             }
             else if (clickedCharacter.equals(labelCharacters[2])) {
+                usr.setWarrior(wc.getWarriors().get(2));
+                removeImageWeapons();
+                setWarriorWeaponsImages();
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        currentFrame = (currentFrame + 1) % numFrames;
-                        BufferedImage subimage = characters[2].getSubimage(currentFrame*64, 0, 64, 32);
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(200,100,
+                        BufferedImage subimage = characterAnim.get(2).updateFrame();
+                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }
                 };
                 timer.addActionListener(currentListener);
             }
             else if (clickedCharacter.equals(labelCharacters[3])) {
+                usr.setWarrior(wc.getWarriors().get(3));
+                removeImageWeapons();
+                setWarriorWeaponsImages();
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        currentFrame = (currentFrame + 1) % numFrames;
-                        BufferedImage subimage = characters[3].getSubimage(currentFrame*64, 0, 64, 32);
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(200,100,
+                        BufferedImage subimage = characterAnim.get(3).updateFrame();
+                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }
                 };
                 timer.addActionListener(currentListener);
             }
             else if (clickedCharacter.equals(labelCharacters[4])) {
+                usr.setWarrior(wc.getWarriors().get(4));
+                removeImageWeapons();
+                setWarriorWeaponsImages();
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        currentFrame = (currentFrame + 1) % numFrames;
-                        BufferedImage subimage = characters[4].getSubimage(currentFrame*64, 0, 64, 32);
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(200,100,
+                        BufferedImage subimage = characterAnim.get(4).updateFrame();
+                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }
                 };
                 timer.addActionListener(currentListener);
             }
             else if (clickedCharacter.equals(labelCharacters[5])) {
+                usr.setWarrior(wc.getWarriors().get(5));
+                removeImageWeapons();
+                setWarriorWeaponsImages();
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        currentFrame = (currentFrame + 1) % numFrames;
-                        BufferedImage subimage = characters[5].getSubimage(currentFrame*64, 0, 64, 32);
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(200,100,
+                        BufferedImage subimage = characterAnim.get(5).updateFrame();
+                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }
                 };
                 timer.addActionListener(currentListener);
             }
             else if (clickedCharacter.equals(labelCharacters[6])) {
+                usr.setWarrior(wc.getWarriors().get(6));
+                removeImageWeapons();
+                setWarriorWeaponsImages();
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        currentFrame = (currentFrame + 1) % numFrames;
-                        BufferedImage subimage = characters[6].getSubimage(currentFrame*64, 0, 64, 32);
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(200,100,
+                        BufferedImage subimage = characterAnim.get(6).updateFrame();
+                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(150, 70,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }
                 };
                 timer.addActionListener(currentListener);
             }
             else if (clickedCharacter.equals(labelCharacters[7])) {
+                usr.setWarrior(wc.getWarriors().get(7));
+                removeImageWeapons();
+                setWarriorWeaponsImages();
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        currentFrame = (currentFrame + 1) % numFrames;
-                        BufferedImage subimage = characters[7].getSubimage(currentFrame*64, 0, 64, 32);
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(200,100,
+                        BufferedImage subimage = characterAnim.get(7).updateFrame();
+                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(150, 70,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }
                 };
                 timer.addActionListener(currentListener);
             }
             else if (clickedCharacter.equals(labelCharacters[8])) {
+                usr.setWarrior(wc.getWarriors().get(8));
+                removeImageWeapons();
+                setWarriorWeaponsImages();
                 currentListener = new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        currentFrame = (currentFrame + 1) % numFrames;
-                        BufferedImage subimage = characters[8].getSubimage(currentFrame*64, 0, 64, 32);
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(200,100,
+                        BufferedImage subimage = characterAnim.get(8).updateFrame();
+                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(150, 70,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }
                 };
@@ -354,5 +416,11 @@ public class GUI extends JFrame {
         public void mouseReleased(MouseEvent e) {}
         public void mouseEntered(MouseEvent e) {}
         public void mouseExited(MouseEvent e) {}
+    }
+}
+class NoWeaponSelected extends Exception {
+
+    public NoWeaponSelected() {
+        super("No weapon selected");
     }
 }
