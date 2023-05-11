@@ -98,15 +98,6 @@ public class GUI extends JFrame {
         characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(8).getName(), characters[8], 5,
                 150, 64, 32));
 
-        /*
-        for (int i = 0; i < characters.length; i++) {
-            BufferedImage subimage = characters[0].getSubimage(currentFrame*200, 0, 200, 200);
-            BufferedImage subimage = characters[1].getSubimage(currentFrame*162, 0, 162, 150);
-            BufferedImage subimage = characters[2].getSubimage(currentFrame*140, 0, 140, 100);
-            labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(240,240,
-                    BufferedImage.TYPE_INT_ARGB)));
-        }
-         */
         //Initialize Character panel and prepare it for animations
         tabCharacters = new EventPanel();
         tabCharacters.setLayout(new GridLayout(3, 3));
