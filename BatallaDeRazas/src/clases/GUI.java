@@ -22,7 +22,6 @@ public class GUI extends JFrame {
     private JLabel[] labelStages, labelCharacters, weaponLabel;
     private JTabbedPane tabPane;
     private BufferedImage[] stages, characters;
-    private int currentFrame = 0, numFrames = 10;
     private Timer timer;
     private ActionListener currentListener = null;
     private Player usr, cpu;
@@ -65,16 +64,12 @@ public class GUI extends JFrame {
             stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
             stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
             stages[2] = ImageIO.read(new File("BatallaDeRazas/src/background/winter.jpg"));
-            characters = new BufferedImage[9];
-            characters[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/human1.png"));
-            characters[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/human2.png"));
-            characters[2] = ImageIO.read(new File("BatallaDeRazas/src/characters/human3.png"));
-            characters[3] = ImageIO.read(new File("BatallaDeRazas/src/characters/elf1.png"));
-            characters[4] = ImageIO.read(new File("BatallaDeRazas/src/characters/elf2.png"));
-            characters[5] = ImageIO.read(new File("BatallaDeRazas/src/characters/elf3.png"));
-            characters[6] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf1.png"));
-            characters[7] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf2.png"));
-            characters[8] = ImageIO.read(new File("BatallaDeRazas/src/characters/dwarf3.png"));
+            int i = 0;
+            characters = new BufferedImage[wc.getWarriors().size()];
+            for (Warrior w: wc.getWarriors()) {
+                characters[i] = ImageIO.read(new File("BatallaDeRazas/src/characters/"+w.getUrlIdle()));
+                i++;
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -132,7 +127,6 @@ public class GUI extends JFrame {
         //Add mouse listener to characters tab and start timer
         tabCharacters.addMouseListener(tabCharacters);
         timer.start();
-        currentFrame = 0;
 
         //Set default stage
         label1 = new JLabel(new ImageIcon(stages[0].getScaledInstance(620, 590,
@@ -216,7 +210,7 @@ public class GUI extends JFrame {
             try {
                 File path = new File(w.getUrl());
                 BufferedImage weaponImage = ImageIO.read(path);
-                weaponLabel[i].setIcon(new ImageIcon(weaponImage.getScaledInstance(200, 200,
+                weaponLabel[i].setIcon(new ImageIcon(weaponImage.getScaledInstance(150, 150,
                         BufferedImage.TYPE_INT_ARGB)));
                 tabWeapons.add(weaponLabel[i]);
                 i++;
