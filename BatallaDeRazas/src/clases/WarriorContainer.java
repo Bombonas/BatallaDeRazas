@@ -32,7 +32,8 @@ public class WarriorContainer {
 
 			// This Result Set call the query that have all the values for the Warriors class
 			ResultSet rs1 = conn1.getQueryRS("SELECT w.playable, r.race, w.hp, w.strength, w.defense, " +
-												"w.agility, w.speed, w.image_path, w.defeatPoints, w.id, " +
+												"w.agility, w.speed, w.idle_animation, w.attack_animation, " +
+												"w.death_animation, w.defeatPoints, w.id, " +
 												"w.name, w.race_id\n" +
 												"FROM warriors w\n" +
 												"INNER JOIN races r on w.race_id = r.id;");
@@ -43,7 +44,7 @@ public class WarriorContainer {
 
 			while (rs1.next()) {
 				// Keep the race_id of the actual warrior
-				race = rs1.getInt(12);
+				race = rs1.getInt(14);
 
 				// Clear the ArrayList weaponAvailable
 				weaponAvailable.clear();
@@ -59,7 +60,8 @@ public class WarriorContainer {
 				warriors.add(new Warrior(rs1.getBoolean(1), rs1.getString(2),
 						rs1.getInt(3), rs1.getInt(4), rs1.getInt(5),
 						rs1.getInt(6), rs1.getInt(7), rs1.getString(8),
-						rs1.getInt(9), rs1.getInt(10), rs1.getString(11)));
+						rs1.getString(9), rs1.getString(10), rs1.getInt(11),
+						rs1.getInt(12), rs1.getString(13)));
 
 				// Set the weapons list of this warrior then sum one in the variable position
 				warriors.get(position).setWeapons(weaponAvailable);
@@ -72,7 +74,6 @@ public class WarriorContainer {
 		} catch (SQLException e) {
 			System.out.println("Error executing ResultSet");
 		}
-
 	}
 
 	
