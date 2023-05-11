@@ -3,6 +3,7 @@ package clases;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,15 +16,13 @@ import java.util.ArrayList;
 
 public class GUI extends JFrame {
     private JPanel mainPanel, tabsPanel, tabStage, tabRanking, characterPanel, fightPanel;
-    private EventPanel stagePanel, tabCharacters;
-    private EventWeapons tabWeapons;
+    private EventPanel stagePanel, tabCharacters, tabWeapons;
     private JButton fightButton;
-    private JLabel label1, labelCharacterPanel1;
+    private JLabel label1, labelCharacterPanel, labelSelectedWeapon;
     private JLabel[] labelStages, labelCharacters, weaponLabel;
     private JTabbedPane tabPane;
     private BufferedImage[] stages, characters;
     private Timer timer;
-    private ActionListener currentListener = null;
     private Player usr, cpu;
     private WarriorContainer wc;
     private ArrayList<CharacterAnimationDetails> characterAnim;
@@ -47,7 +46,7 @@ public class GUI extends JFrame {
         mainPanel.setLayout(new BorderLayout());
         tabsPanel = new JPanel();
         tabsPanel.setLayout(new BoxLayout(tabsPanel, BoxLayout.Y_AXIS));
-        tabWeapons = new EventWeapons();
+        tabWeapons = new EventPanel();
         tabWeapons.addMouseListener(tabWeapons);
         tabStage = new JPanel();
         tabRanking = new JPanel();
@@ -56,9 +55,8 @@ public class GUI extends JFrame {
         stagePanel = new EventPanel();
         stagePanel.setLayout(new BorderLayout());
         fightPanel = new JPanel();
-        fightPanel.setBorder(new LineBorder(Color.BLUE, 1));//Border to see empty panel's location, delete later
 
-        //Define image paths for stages, characters and weapons
+        //Define image paths for stages and characters
         try {
             stages = new BufferedImage[3];
             stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
@@ -73,51 +71,68 @@ public class GUI extends JFrame {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        //Initialize arrayList to give frameCount value, X width and Y height values to animate characters according
+        //to their needs
         characterAnim = new ArrayList<CharacterAnimationDetails>();
         characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(0).getName(), characters[0], 4,
-                150, 200, 190));
+                200, 190));
         characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(1).getName(), characters[1], 10,
-                150, 162, 150));
+                162, 150));
         characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(2).getName(), characters[2], 10,
-                150, 140, 120));
+                140, 120));
         characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(3).getName(), characters[3], 8,
-                150,150, 150));
+                150, 140));
         characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(4).getName(), characters[4], 10,
-                150, 100, 100));
+                100, 100));
         characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(5).getName(), characters[5], 10,
-                150, 126, 126));
+                126, 116));
         characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(6).getName(), characters[6], 5,
-                150, 64, 32));
+                64, 32));
         characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(7).getName(), characters[7], 5,
-                150, 64, 32));
+                64, 32));
         characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(8).getName(), characters[8], 5,
-                150, 64, 32));
+                64, 32));
 
         //Initialize Character panel and prepare it for animations
         tabCharacters = new EventPanel();
         tabCharacters.setLayout(new GridLayout(3, 3));
         labelCharacters = new JLabel[9];
-        labelCharacters[0] = new JLabel();
         //Label will include selected character
-        labelCharacterPanel1 = new JLabel();
+        labelCharacterPanel = new JLabel();
+        labelSelectedWeapon = new JLabel();
         characterPanel.setLayout(new BoxLayout(characterPanel, BoxLayout.X_AXIS));
-        characterPanel.add(labelCharacterPanel1);
+        characterPanel.add(labelCharacterPanel);
+        characterPanel.add(labelSelectedWeapon);
+        //Fill characters panel with empty labels that will be replaced with animated characters images
         for (int i = 0; i < labelCharacters.length; i++) {
             labelCharacters[i] = new JLabel();
             tabCharacters.add(labelCharacters[i]);
         }
         //Set a timer to update frames for the animations
         timer = new Timer(150, new ActionListener() {
-            //ActionListener navigates through the sprite sheet on the X axis to get a new image every 64 pixels
+            //ActionListener calls to the updateFrame method from the CharacterAnimationDetails class
             public void actionPerformed(ActionEvent e) {
                 int i = 0;
                 for (CharacterAnimationDetails ch: characterAnim) {
                     BufferedImage subimage = ch.updateFrame();
+                    //Set the default selected character by getting player's current warrior
+                    if (ch.getName().equals(usr.getWarrior().getName())) {
+                        if (i > 5) {
+                            //Lower height value for dwarf characters
+                            labelCharacterPanel.setIcon(new ImageIcon(subimage.getScaledInstance(250, 100,
+                                    BufferedImage.TYPE_INT_ARGB)));
+                        }else {
+                            labelCharacterPanel.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
+                                    BufferedImage.TYPE_INT_ARGB)));
+                        }
+                    }
+                    //Fill character tab with every available character
                     if (i <= 5) {
                         labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }else{
-                        labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(150, 70,
+                        //Lowe height value for dwarf characters
+                        labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(250, 100,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }
                     i++;
@@ -160,24 +175,27 @@ public class GUI extends JFrame {
             tabStage.add(labelStages[i]);
         }
 
-        //Fill weapons tab with selectable weapons from user's character and remove previous ones
+        //Fill weapons tab with selectable weapons from user's warrior
         tabWeapons.setLayout(new FlowLayout());
-        removeImageWeapons();
         setWarriorWeaponsImages();
-
+        setSelectedWeaponImage();
         //Initialize fight button and add it to fightPanel
         fightButton = new JButton("Fight!");
         fightPanel.add(fightButton);
         fightButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
+                    //Condition to check if player has selected a weapon
                     if (usr.getWeapon() == null) {
+                        //If the player hasn't selected a weapon, throw exception
                         throw new NoWeaponSelected();
                     }else{
+                        //If the player has selected a weapon, move to the next frame and close this one
                         GUI.super.dispose();
                         new BattleGUI(usr, cpu);
                     }
                 } catch (NoWeaponSelected ex) {
+                    //Exception shows an error window
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "Error",
                             JOptionPane.ERROR_MESSAGE);
                 } {
@@ -185,7 +203,6 @@ public class GUI extends JFrame {
                 }
             }
         });
-
 
         //Add main panel to JFrame and set visible
         add(mainPanel);
@@ -219,10 +236,39 @@ public class GUI extends JFrame {
             }
         }
     }
-
+    public void setSelectedWeaponImage() {
+        BufferedImage selectedWeapon;
+        if (usr.getWeapon() == null) {
+            try {
+                selectedWeapon = ImageIO.read(new File("BatallaDeRazas/src/weapons/noweapon.png"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }else{
+            try {
+                selectedWeapon = ImageIO.read(new File(usr.getWeapon().getUrl()));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        labelSelectedWeapon.setIcon(new ImageIcon(selectedWeapon.getScaledInstance(70, 70,
+                BufferedImage.TYPE_INT_ARGB)));
+    }
+    //Method to return true value if the player's current warrior can use the player's current weapon
+    public boolean checkAvailableWeapons() {
+        if (usr.getWeapon()!= null) {
+            for (Weapon w: usr.getWarrior().getWeapons()) {
+                if (usr.getWeapon().equals(w)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    //Internal JPanel implementation with MouseListener events for selected stages, weapons and characters
     class EventPanel extends JPanel implements MouseListener {
         public void mouseClicked(MouseEvent e) {
-            Component clickedCharacter = getComponentAt(e.getPoint());
+            Component clickedComponent = getComponentAt(e.getPoint());
             //Change to stage 1
             if (e.getSource().equals(labelStages[0])) {
                 label1.setIcon(new ImageIcon(stages[0].getScaledInstance(620, 590,
@@ -238,160 +284,32 @@ public class GUI extends JFrame {
                 label1.setIcon(new ImageIcon(stages[2].getScaledInstance(620, 590,
                         BufferedImage.TYPE_INT_ARGB)));
             }
-            //If multiple characters are selected in the characters tab, remove previous actionListeners to avoid
-            //having multiple animations loading
-            if (currentListener != null && !e.getSource().equals(labelStages[0])
-            && !e.getSource().equals(labelStages[1])
-            && !e.getSource().equals(labelStages[2])) {
-                timer.removeActionListener(currentListener);
-            }
-            //Change selected character and animate it
-            if (clickedCharacter.equals(labelCharacters[0])) {
-                usr.setWarrior(wc.getWarriors().get(0));
-                removeImageWeapons();
-                setWarriorWeaponsImages();
-                currentListener = new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        BufferedImage subimage = characterAnim.get(0).updateFrame();
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
-                                BufferedImage.TYPE_INT_ARGB)));
+            //Remove weapon images from previous character and set the images available for the current
+            //selected character
+            for (int i = 0; i < 9; i++) {
+                if (clickedComponent.equals(labelCharacters[i])) {
+                    usr.setWarrior(wc.getWarriors().get(i));
+                    removeImageWeapons();
+                    setWarriorWeaponsImages();
+                    //Condition to reset weapon to null if new selected character can't use previous weapon
+                    if (!checkAvailableWeapons()) {
+                        usr.setWeapon(null);
+                        setSelectedWeaponImage();
                     }
-                };
-                timer.addActionListener(currentListener);
+                    break;
+                }
             }
-            else if (clickedCharacter.equals(labelCharacters[1])) {
-                usr.setWarrior(wc.getWarriors().get(1));
-                removeImageWeapons();
-                setWarriorWeaponsImages();
-                currentListener = new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        BufferedImage subimage = characterAnim.get(1).updateFrame();
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
-                                BufferedImage.TYPE_INT_ARGB)));
-                    }
-                };
-                timer.addActionListener(currentListener);
-            }
-            else if (clickedCharacter.equals(labelCharacters[2])) {
-                usr.setWarrior(wc.getWarriors().get(2));
-                removeImageWeapons();
-                setWarriorWeaponsImages();
-                currentListener = new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        BufferedImage subimage = characterAnim.get(2).updateFrame();
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
-                                BufferedImage.TYPE_INT_ARGB)));
-                    }
-                };
-                timer.addActionListener(currentListener);
-            }
-            else if (clickedCharacter.equals(labelCharacters[3])) {
-                usr.setWarrior(wc.getWarriors().get(3));
-                removeImageWeapons();
-                setWarriorWeaponsImages();
-                currentListener = new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        BufferedImage subimage = characterAnim.get(3).updateFrame();
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
-                                BufferedImage.TYPE_INT_ARGB)));
-                    }
-                };
-                timer.addActionListener(currentListener);
-            }
-            else if (clickedCharacter.equals(labelCharacters[4])) {
-                usr.setWarrior(wc.getWarriors().get(4));
-                removeImageWeapons();
-                setWarriorWeaponsImages();
-                currentListener = new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        BufferedImage subimage = characterAnim.get(4).updateFrame();
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
-                                BufferedImage.TYPE_INT_ARGB)));
-                    }
-                };
-                timer.addActionListener(currentListener);
-            }
-            else if (clickedCharacter.equals(labelCharacters[5])) {
-                usr.setWarrior(wc.getWarriors().get(5));
-                removeImageWeapons();
-                setWarriorWeaponsImages();
-                currentListener = new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        BufferedImage subimage = characterAnim.get(5).updateFrame();
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
-                                BufferedImage.TYPE_INT_ARGB)));
-                    }
-                };
-                timer.addActionListener(currentListener);
-            }
-            else if (clickedCharacter.equals(labelCharacters[6])) {
-                usr.setWarrior(wc.getWarriors().get(6));
-                removeImageWeapons();
-                setWarriorWeaponsImages();
-                currentListener = new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        BufferedImage subimage = characterAnim.get(6).updateFrame();
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(150, 70,
-                                BufferedImage.TYPE_INT_ARGB)));
-                    }
-                };
-                timer.addActionListener(currentListener);
-            }
-            else if (clickedCharacter.equals(labelCharacters[7])) {
-                usr.setWarrior(wc.getWarriors().get(7));
-                removeImageWeapons();
-                setWarriorWeaponsImages();
-                currentListener = new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        BufferedImage subimage = characterAnim.get(7).updateFrame();
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(150, 70,
-                                BufferedImage.TYPE_INT_ARGB)));
-                    }
-                };
-                timer.addActionListener(currentListener);
-            }
-            else if (clickedCharacter.equals(labelCharacters[8])) {
-                usr.setWarrior(wc.getWarriors().get(8));
-                removeImageWeapons();
-                setWarriorWeaponsImages();
-                currentListener = new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        BufferedImage subimage = characterAnim.get(8).updateFrame();
-                        labelCharacterPanel1.setIcon(new ImageIcon(subimage.getScaledInstance(150, 70,
-                                BufferedImage.TYPE_INT_ARGB)));
-                    }
-                };
-                timer.addActionListener(currentListener);
-            }
-        }
-        public void mousePressed(MouseEvent e) {}
-        public void mouseReleased(MouseEvent e) {}
-        public void mouseEntered(MouseEvent e) {}
-        public void mouseExited(MouseEvent e) {}
-    }
-    //Define JPanel with MouseListener for Weapons tab
-    class EventWeapons extends JPanel implements MouseListener {
-
-        public void mouseClicked(MouseEvent e) {
-            //clickedWeapon gets the component at the point the mouse is clicked
-            Component clickedWeapon = getComponentAt(e.getPoint());
             if (e.getSource().equals(tabWeapons)) {
                 //Iterate through weapon labels and compare their paths with every weapon available for the warrior
                 for (int i = 0; i < weaponLabel.length; i++) {
-                    if (clickedWeapon.equals(weaponLabel[i])) {
+                    if (clickedComponent.equals(weaponLabel[i])) {
+                        //Change player's weapon to the selected one
                         if (paths[i].equals(usr.getWarrior().getWeapons().get(i).getUrl())) {
                             System.out.println(usr.getWeapon());
                             usr.setWeapon(usr.getWarrior().getWeapons().get(i));
                             System.out.println(usr.getWeapon());
+                            setSelectedWeaponImage();
+                            break;
                         }
                     }
                 }
