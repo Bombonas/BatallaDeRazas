@@ -245,22 +245,27 @@ public class GUI extends JFrame {
         labelMatrix[0][0] = new JLabel("PLAYER ID");
         labelMatrix[0][0].setFont(rankingFont);
         labelMatrix[0][0].setForeground(Color.WHITE);
+        tabRanking.add(labelMatrix[0][0]);
 
         labelMatrix[0][1] = new JLabel("NAME");
         labelMatrix[0][1].setFont(rankingFont);
         labelMatrix[0][1].setForeground(Color.WHITE);
+        tabRanking.add(labelMatrix[0][1]);
 
         labelMatrix[0][2] = new JLabel("WARRIOR");
         labelMatrix[0][2].setFont(rankingFont);
         labelMatrix[0][2].setForeground(Color.WHITE);
+        tabRanking.add(labelMatrix[0][2]);
 
         labelMatrix[0][3] = new JLabel("WEAPON");
         labelMatrix[0][3].setFont(rankingFont);
         labelMatrix[0][3].setForeground(Color.WHITE);
+        tabRanking.add(labelMatrix[0][3]);
 
         labelMatrix[0][4] = new JLabel("WON COMBATS");
         labelMatrix[0][4].setFont(rankingFont);
         labelMatrix[0][4].setForeground(Color.WHITE);
+        tabRanking.add(labelMatrix[0][4]);
 
         // DDBB QUERY
         DataBaseConn conn = new DataBaseConn();
@@ -277,10 +282,13 @@ public class GUI extends JFrame {
                 "GROUP BY players.id\n" +
                 "ORDER BY count(rounds.id)DESC;");
         try {
-            rs.next();
             for (int i = 1; i < 11; ++i) {
+                rs.next();
                 for (int j = 0; j < 5; ++j) {
-
+                    labelMatrix[i][j] = new JLabel(rs.getString(i + 1));
+                    labelMatrix[i][j].setFont(rankingFont);
+                    labelMatrix[i][j].setForeground(Color.WHITE);
+                    tabRanking.add(labelMatrix[i][j]);
                 }
             }
         }catch (SQLException e){
