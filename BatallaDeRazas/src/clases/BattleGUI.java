@@ -22,13 +22,15 @@ public class BattleGUI extends JFrame implements ActionListener{
     private boolean tAreaVisible;
     private JScrollPane scrollPane;
     private Color colorButton, colorBackground;
-    private String pathBackground;
+    private BufferedImage imgBackground;
     private Player user, cpu;
     private WarriorContainer wc;
     private ArrayList<Player> orderTurns;
     private int turnNum;
+    private RoundsInfo ri;
+    private JFrame gui;
 
-    public BattleGUI(Player user, Player cpu, WarriorContainer wc,String pathBackground){
+    public BattleGUI(Player user, Player cpu, WarriorContainer wc,BufferedImage imgBackground, JFrame gui){
         setSize(1280, 720);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -36,13 +38,13 @@ public class BattleGUI extends JFrame implements ActionListener{
         orderTurns = new ArrayList<Player>();
         orderTurns.add(user);
         orderTurns.add(cpu);
-
         turnNum = 0;
 
+        this.gui = gui;
         this.user = user;
         this.cpu = cpu;
         this.wc = wc;
-        this.pathBackground = pathBackground;
+        this.imgBackground = imgBackground;
 
         colorBackground = new Color(53, 32, 112, 255);
         colorButton = new Color(206, 187, 128, 255);
@@ -54,13 +56,15 @@ public class BattleGUI extends JFrame implements ActionListener{
         add(buttonsPanel, BorderLayout.NORTH);
         add(combatPanel);
 
+        ri = new RoundsInfo(cpu, user);
+
         startRound();
 
         setVisible(true);
     }
 
     public void setCombatPanel(){
-        combatPanel = new BattlePanel(pathBackground);
+        combatPanel = new BattlePanel(imgBackground);
         combatPanel.setPreferredSize(new Dimension(1280, 680));
         combatPanel.setLayout(new BorderLayout());
 
@@ -176,6 +180,8 @@ public class BattleGUI extends JFrame implements ActionListener{
     public void newOpponent(){
         cpu.setWarrior(wc.getRandomWarrior());
         cpu.setWeapon();
+        ri.setIdOpponent(cpu.getWarrior().getIdWarrior());
+        ri.setIdOpponentWeapon(cpu.getWeapon().getIdWeapon());
     }
 
     public void startRound(){
@@ -191,13 +197,24 @@ public class BattleGUI extends JFrame implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
+        if(user.getCurrentHP() > 0){// WIN
+            ri.setInjuriesCaused(cpu.getWarrior().getHp() - cpu.getCurrentHP());
+            ri.setInjuriesSuffered(user.getWarrior().getHp() - user.getCurrentHP());
 
-        PopUp p = new PopUp(this, colorBackground, colorButton);
+            ri.updateData(cpu.getWarrior().getDefeatPoints() + cpu.getWeapon().getDefeatPoints());
+
+        }else{// LOSE
+            ri.setInjuriesCaused(cpu.getWarrior().getHp() - cpu.getCurrentHP());
+            ri.setInjuriesSuffered(user.getWarrior().getHp() - user.getCurrentHP());
+
+            ri.updateData();
+        }
+
+        PopUp p = new PopUp(this, colorBackground, colorButton, gui);
         if(user.getCurrentHP() > 0){// WIN
             newOpponent();
             startRound();
         }else{// LOSE
-            // Guardar en BBDD
             user.setWeapon(null);
             dispose();
         }

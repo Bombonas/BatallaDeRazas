@@ -22,19 +22,20 @@ public class GUI extends JFrame {
     private JLabel[] labelStages, labelCharacters, weaponLabel;
     private JTabbedPane tabPane;
     private BufferedImage[] stages, characters;
+    private BufferedImage selectedBackground;
     private Timer timer;
     private ActionListener currentListener = null;
     private Player usr, cpu;
     private WarriorContainer wc;
     private ArrayList<CharacterAnimationDetails> characterAnim;
     private String[] paths;
+    private JFrame gui;
 
     public GUI(Player usr, Player cpu, WarriorContainer wc) {
-
+        gui = this;
         this.usr = usr;
         this.cpu = cpu;
         this.wc = wc;
-
         //Define JFrame properties: size, close operation, title, location
         setSize(1280,720);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -64,6 +65,7 @@ public class GUI extends JFrame {
             stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
             stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
             stages[2] = ImageIO.read(new File("BatallaDeRazas/src/background/winter.jpg"));
+            selectedBackground = stages[0];
             int i = 0;
             characters = new BufferedImage[wc.getWarriors().size()];
             for (Warrior w: wc.getWarriors()) {
@@ -174,8 +176,8 @@ public class GUI extends JFrame {
                     if (usr.getWeapon() == null) {
                         throw new NoWeaponSelected();
                     }else{
-                        GUI.super.dispose();
-                        new BattleGUI(usr, cpu);
+                        //GUI.super.dispose();
+                        new BattleGUI(usr, cpu, wc, selectedBackground, gui);
                     }
                 } catch (NoWeaponSelected ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "Error",
@@ -225,16 +227,19 @@ public class GUI extends JFrame {
             Component clickedCharacter = getComponentAt(e.getPoint());
             //Change to stage 1
             if (e.getSource().equals(labelStages[0])) {
+                selectedBackground = stages[0];
                 label1.setIcon(new ImageIcon(stages[0].getScaledInstance(620, 590,
                         BufferedImage.TYPE_INT_ARGB)));
             }
             //Change to stage 2
             else if (e.getSource().equals(labelStages[1])) {
+                selectedBackground = stages[1];
                 label1.setIcon(new ImageIcon(stages[1].getScaledInstance(620, 590,
                         BufferedImage.TYPE_INT_ARGB)));
             }
             //Change to stage 3
             else if (e.getSource().equals(labelStages[2])) {
+                selectedBackground = stages[2];
                 label1.setIcon(new ImageIcon(stages[2].getScaledInstance(620, 590,
                         BufferedImage.TYPE_INT_ARGB)));
             }

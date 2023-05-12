@@ -13,9 +13,9 @@ public class Main {
 		// Instance the players
 		Player cpu = new Player(warriorList.getRandomWarrior(), "CPU");
 		Player usr = new Player(warriorList.getRandomWarrior(), "USR");
-
+		cpu.setWeapon();
 		new GUI(usr, cpu, warriorList);
-
+		/*
 		// Instance the ArrayList to put both player and manage the turns
 		ArrayList<Player> playerList = new ArrayList<Player>();
 		playerList.add(usr);
@@ -89,7 +89,7 @@ public class Main {
 							System.out.println("Error");
 						}
 
-						switch (opt) {
+						switch (opt) {// PopUp
 							case 1: {
 								if (usr.getCurrentHP() > 0) {
 									cpu.setWarrior(warriorList.getRandomWarrior());
@@ -133,7 +133,11 @@ public class Main {
 			else System.out.println("Error");
 			
 		}
+
+		 */
 		
 	}
+
+
 
 }

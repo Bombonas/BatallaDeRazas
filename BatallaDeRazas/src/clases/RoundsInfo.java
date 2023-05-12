@@ -40,9 +40,9 @@ public class RoundsInfo {
 
     }
 
-    public void sumInjuriesCaused(int injuries) { injuriesCaused += injuries; }
+    public void setInjuriesCaused(int injuries) { injuriesCaused = injuries; }
 
-    public void sumInjuriesSuffered(int injuries) { injuriesSuffered += injuries; }
+    public void setInjuriesSuffered(int injuries) { injuriesSuffered = injuries; }
 
     public void setIdOpponent(int idOpponent) { this.idOpponent = idOpponent; }
 
