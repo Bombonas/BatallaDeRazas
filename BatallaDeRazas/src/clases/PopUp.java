@@ -45,6 +45,7 @@ public class PopUp extends JDialog {
         no.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 frame.dispose();
                 dispose();
             }

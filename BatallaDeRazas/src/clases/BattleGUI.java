@@ -191,12 +191,14 @@ public class BattleGUI extends JFrame implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
         PopUp p = new PopUp(this, colorBackground, colorButton);
         if(user.getCurrentHP() > 0){// WIN
             newOpponent();
             startRound();
         }else{// LOSE
             // Guardar en BBDD
+            user.setWeapon(null);
             dispose();
         }
     }
