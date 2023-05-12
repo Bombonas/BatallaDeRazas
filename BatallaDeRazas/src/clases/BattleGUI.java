@@ -28,9 +28,8 @@ public class BattleGUI extends JFrame implements ActionListener{
     private ArrayList<Player> orderTurns;
     private int turnNum;
     private RoundsInfo ri;
-    private JFrame gui;
 
-    public BattleGUI(Player user, Player cpu, WarriorContainer wc,BufferedImage imgBackground, JFrame gui){
+    public BattleGUI(Player user, Player cpu, WarriorContainer wc,BufferedImage imgBackground){
         setSize(1280, 720);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -40,7 +39,6 @@ public class BattleGUI extends JFrame implements ActionListener{
         orderTurns.add(cpu);
         turnNum = 0;
 
-        this.gui = gui;
         this.user = user;
         this.cpu = cpu;
         this.wc = wc;
@@ -210,7 +208,7 @@ public class BattleGUI extends JFrame implements ActionListener{
             ri.updateData();
         }
 
-        PopUp p = new PopUp(this, colorBackground, colorButton, gui);
+        PopUp p = new PopUp(this, colorBackground, colorButton);
         if(user.getCurrentHP() > 0){// WIN
             newOpponent();
             startRound();

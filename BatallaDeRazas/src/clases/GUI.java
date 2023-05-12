@@ -29,10 +29,8 @@ public class GUI extends JFrame {
     private WarriorContainer wc;
     private ArrayList<CharacterAnimationDetails> characterAnim;
     private String[] paths;
-    private JFrame gui;
 
     public GUI(Player usr, Player cpu, WarriorContainer wc) {
-        gui = this;
         this.usr = usr;
         this.cpu = cpu;
         this.wc = wc;
@@ -177,7 +175,7 @@ public class GUI extends JFrame {
                         throw new NoWeaponSelected();
                     }else{
                         //GUI.super.dispose();
-                        new BattleGUI(usr, cpu, wc, selectedBackground, gui);
+                        new BattleGUI(usr, cpu, wc, selectedBackground);
                     }
                 } catch (NoWeaponSelected ex) {
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "Error",

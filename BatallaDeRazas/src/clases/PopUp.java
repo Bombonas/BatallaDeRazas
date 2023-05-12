@@ -11,7 +11,7 @@ public class PopUp extends JDialog {
     private JLabel text;
     private JPanel globalPanel, buttonPanel;
 
-    public PopUp(BattleGUI frame, Color background, Color buttons, JFrame gui){
+    public PopUp(BattleGUI frame, Color background, Color buttons){
         super(frame, true);
         setSize(400, 150);
         setLocation(500, 500);
@@ -45,9 +45,7 @@ public class PopUp extends JDialog {
         no.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                gui.dispose();
-                frame.dispose();
-                dispose();
+                System.exit(0);
             }
         });
 
