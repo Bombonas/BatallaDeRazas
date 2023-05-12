@@ -232,6 +232,7 @@ public class GUI extends JFrame {
                     }else{
                         //GUI.super.dispose();
                         new BattleGUI(usr, cpu, wc, selectedBackground);
+                        GUI.super.dispose();
                     }
                 } catch (NoWeaponSelected ex) {
                     //Exception shows an error window

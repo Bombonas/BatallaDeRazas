@@ -214,6 +214,7 @@ public class BattleGUI extends JFrame implements ActionListener{
             startRound();
         }else{// LOSE
             user.setWeapon(null);
+            new GUI(user, cpu, wc);
             dispose();
         }
     }
