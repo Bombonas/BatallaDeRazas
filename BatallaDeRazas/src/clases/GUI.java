@@ -3,14 +3,11 @@ package clases;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
-import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +21,7 @@ public class GUI extends JFrame {
     private JLabel[] labelStages, labelCharacters, weaponLabel;
     private JTabbedPane tabPane;
     private BufferedImage[] stages, characters;
+    private BufferedImage selectedBackground;
     private Timer timer;
     private Player usr, cpu;
     private WarriorContainer wc;
@@ -81,6 +79,7 @@ public class GUI extends JFrame {
             stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
             stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
             stages[2] = ImageIO.read(new File("BatallaDeRazas/src/background/winter.jpg"));
+            selectedBackground = stages[0];
             int i = 0;
             characters = new BufferedImage[wc.getWarriors().size()];
             for (Warrior w: wc.getWarriors()) {
@@ -231,9 +230,8 @@ public class GUI extends JFrame {
                         //If the player hasn't selected a weapon, throw exception
                         throw new NoWeaponSelected();
                     }else{
-                        //If the player has selected a weapon, move to the next frame and close this one
-                        GUI.super.dispose();
-                        new BattleGUI(usr, cpu);
+                        //GUI.super.dispose();
+                        new BattleGUI(usr, cpu, wc, selectedBackground);
                     }
                 } catch (NoWeaponSelected ex) {
                     //Exception shows an error window
@@ -244,6 +242,7 @@ public class GUI extends JFrame {
                 }
             }
         });
+
 
         //Add main panel to JFrame and set visible
         add(mainPanel);
@@ -312,16 +311,19 @@ public class GUI extends JFrame {
             Component clickedComponent = getComponentAt(e.getPoint());
             //Change to stage 1
             if (e.getSource().equals(labelStages[0])) {
+                selectedBackground = stages[0];
                 label1.setIcon(new ImageIcon(stages[0].getScaledInstance(620, 590,
                         BufferedImage.TYPE_INT_ARGB)));
             }
             //Change to stage 2
             else if (e.getSource().equals(labelStages[1])) {
+                selectedBackground = stages[1];
                 label1.setIcon(new ImageIcon(stages[1].getScaledInstance(620, 590,
                         BufferedImage.TYPE_INT_ARGB)));
             }
             //Change to stage 3
             else if (e.getSource().equals(labelStages[2])) {
+                selectedBackground = stages[2];
                 label1.setIcon(new ImageIcon(stages[2].getScaledInstance(620, 590,
                         BufferedImage.TYPE_INT_ARGB)));
             }
