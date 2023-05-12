@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.font.FontRenderContext;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +20,7 @@ public class GUI extends JFrame {
     private JPanel mainPanel, tabsPanel, tabStage, tabRanking, characterPanel, fightPanel;
     private EventPanel stagePanel, tabCharacters, tabWeapons;
     private JButton fightButton;
-    private JLabel label1, labelCharacterPanel, labelSelectedWeapon;
+    private JLabel label1, labelCharacterPanel, labelSelectedWeapon, labelWeaponBackground;
     private JLabel[] labelStages, labelCharacters, weaponLabel;
     private JTabbedPane tabPane;
     private BufferedImage[] stages, characters;
@@ -27,6 +29,7 @@ public class GUI extends JFrame {
     private WarriorContainer wc;
     private ArrayList<CharacterAnimationDetails> characterAnim;
     private String[] paths;
+    private Font pixelFont;
 
     public GUI(Player usr, Player cpu, WarriorContainer wc) {
 
@@ -46,7 +49,21 @@ public class GUI extends JFrame {
         mainPanel.setLayout(new BorderLayout());
         tabsPanel = new JPanel();
         tabsPanel.setLayout(new BoxLayout(tabsPanel, BoxLayout.Y_AXIS));
-        tabWeapons = new EventPanel();
+        tabWeapons = new EventPanel() {
+            //Draw background for weapons tab
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                try {
+                    BufferedImage weaponsBackground = ImageIO.read(new File(
+                            "BatallaDeRazas/src/background/store.png"));
+                    Image scaledBackground = weaponsBackground.getScaledInstance(this.getWidth(),
+                            this.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    g.drawImage(scaledBackground, 0, 0, this);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
         tabWeapons.addMouseListener(tabWeapons);
         tabStage = new JPanel();
         tabRanking = new JPanel();
@@ -58,6 +75,8 @@ public class GUI extends JFrame {
 
         //Define image paths for stages and characters
         try {
+            pixelFont = Font.createFont(Font.TRUETYPE_FONT, new File(
+                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(32f);
             stages = new BufferedImage[3];
             stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
             stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
@@ -69,6 +88,8 @@ public class GUI extends JFrame {
                 i++;
             }
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (FontFormatException e) {
             throw new RuntimeException(e);
         }
         //Initialize arrayList to give frameCount value, X width and Y height values to animate characters according
@@ -94,7 +115,27 @@ public class GUI extends JFrame {
                 64, 32));
 
         //Initialize Character panel and prepare it for animations
-        tabCharacters = new EventPanel();
+        tabCharacters = new EventPanel() {
+            //Draw background image and string for selecting character
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                try {
+                    BufferedImage characterBackground = ImageIO.read(new File(
+                            "BatallaDeRazas/src/background/characterSelection.jpg"));
+                    Image scaledBackground = characterBackground.getScaledInstance(this.getWidth(), this.getHeight(),
+                            BufferedImage.TYPE_INT_ARGB);
+                    String text = "SELECT YOUR CHARACTER";
+                    g2d.setFont(pixelFont);
+                    g.drawImage(scaledBackground,0, 0, null);
+                    g2d.drawString(text, 100, 40);
+                    g2d.setColor(new Color(141, 148, 148));
+                    g2d.drawString(text, 102, 42);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
         tabCharacters.setLayout(new GridLayout(3, 3));
         labelCharacters = new JLabel[9];
         //Label will include selected character
@@ -227,7 +268,7 @@ public class GUI extends JFrame {
             try {
                 File path = new File(w.getUrl());
                 BufferedImage weaponImage = ImageIO.read(path);
-                weaponLabel[i].setIcon(new ImageIcon(weaponImage.getScaledInstance(150, 150,
+                weaponLabel[i].setIcon(new ImageIcon(weaponImage.getScaledInstance(120, 120,
                         BufferedImage.TYPE_INT_ARGB)));
                 tabWeapons.add(weaponLabel[i]);
                 i++;
