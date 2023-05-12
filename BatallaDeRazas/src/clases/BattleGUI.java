@@ -10,24 +10,42 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
-public class BattleGUI extends JFrame {
+public class BattleGUI extends JFrame implements ActionListener{
     private JTextArea console;
     private JPanel buttonsPanel;
     private BattlePanel combatPanel;
     private JLabel labelBack;
-    private JButton speed, hideShow;
+    private JButton turn, hideShow, finish, fastMode;
     private BufferedImage background;
     private boolean tAreaVisible;
     private JScrollPane scrollPane;
-    private Player usr, cpu;
+    private Color colorButton, colorBackground;
+    private String pathBackground;
+    private Player user, cpu;
+    private WarriorContainer wc;
+    private ArrayList<Player> orderTurns;
+    private int turnNum;
 
-    public BattleGUI(Player usr, Player cpu){
-        this.usr = usr;
-        this.cpu = cpu;
+    public BattleGUI(Player user, Player cpu, WarriorContainer wc,String pathBackground){
         setSize(1280, 720);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        orderTurns = new ArrayList<Player>();
+        orderTurns.add(user);
+        orderTurns.add(cpu);
+
+        turnNum = 0;
+
+        this.user = user;
+        this.cpu = cpu;
+        this.wc = wc;
+        this.pathBackground = pathBackground;
+
+        colorBackground = new Color(53, 32, 112, 255);
+        colorButton = new Color(206, 187, 128, 255);
 
         setButtonsPanel();
         setCombatPanel();
@@ -36,42 +54,42 @@ public class BattleGUI extends JFrame {
         add(buttonsPanel, BorderLayout.NORTH);
         add(combatPanel);
 
+        startRound();
 
         setVisible(true);
     }
 
-    public boolean isOpaque() {
-        return true;
-    }
-
     public void setCombatPanel(){
-        combatPanel = new BattlePanel();
+        combatPanel = new BattlePanel(pathBackground);
         combatPanel.setPreferredSize(new Dimension(1280, 680));
         combatPanel.setLayout(new BorderLayout());
 
-        console = new JTextArea();
+        console = new JTextArea(2000, 30);
         console.setPreferredSize(new Dimension(300, 680));
-        console.setEditable(true);
+        console.setEditable(false);
         console.setOpaque(true);
-        console.setBackground(new Color(88, 24, 69, 255));
+        console.setBackground(colorBackground);
+
+
+        console.setFont(new Font("Serif", Font.ITALIC, 17));
         console.setForeground(Color.WHITE);
 
         scrollPane = new JScrollPane(console);
-        scrollPane.setBackground(new Color(88, 24, 69, 255));
-        scrollPane.getVerticalScrollBar().setBackground(new Color(88, 24, 69, 255));
-        scrollPane.getHorizontalScrollBar().setBackground(new Color(88, 24, 69, 255));
+        scrollPane.setBackground(colorBackground);
+        scrollPane.getVerticalScrollBar().setBackground(colorBackground);
+        scrollPane.getHorizontalScrollBar().setBackground(colorBackground);
 
         scrollPane.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
-                this.thumbColor = new Color(255, 195, 0, 255);
+                this.thumbColor = colorButton;
             }
         });
 
         scrollPane.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
             @Override
             protected void configureScrollBarColors() {
-                this.thumbColor = new Color(255, 195, 0, 255);
+                this.thumbColor = colorButton;
             }
         });
 
@@ -85,11 +103,16 @@ public class BattleGUI extends JFrame {
     }
 
     public void setButtonsPanel(){
-        speed = new JButton("Speed");
+        turn = new JButton("Next Turn");
+        fastMode = new JButton("Fast Mode");
         hideShow = new JButton("Hide/Show console");
+        finish = new JButton("Finish");
 
-        speed.setBackground(new Color(255, 195, 0, 255));
-        hideShow.setBackground(new Color(255, 195, 0, 255));
+        turn.setBackground(colorButton);
+        fastMode.setBackground(colorButton);
+        hideShow.setBackground(colorButton);
+        finish.setBackground(colorButton);
+        finish.setVisible(false);
 
         hideShow.addActionListener(new ActionListener() {
             @Override
@@ -105,13 +128,78 @@ public class BattleGUI extends JFrame {
                 }
             }
         });
+
+        turn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String msg;
+                if(cpu.getCurrentHP() > 0 & user.getCurrentHP() > 0) {
+                    msg = orderTurns.get(turnNum).atack(orderTurns.get((turnNum + 1) % 2));
+                    turnNum = (turnNum + 1) % 2;
+                    console.append(msg);
+                }else{
+                    console.append("BATALLA FINALIZADA");
+                    finish.setVisible(true);
+                    turn.setVisible(false);
+                    fastMode.setVisible(false);
+                }
+            }
+        });
+
+        fastMode.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String msg;
+                while(cpu.getCurrentHP() > 0 & user.getCurrentHP() > 0){
+                    msg = orderTurns.get(turnNum).atack(orderTurns.get((turnNum + 1) % 2));
+                    turnNum = (turnNum + 1) % 2;
+                    console.append(msg);
+                }
+                console.append("BATALLA FINALIZADA");
+                finish.setVisible(true);
+                turn.setVisible(false);
+                fastMode.setVisible(false);
+            }
+        });
+
+        finish.addActionListener(this);
+
         buttonsPanel = new JPanel();
-        buttonsPanel.setBackground(new Color(88, 24, 69, 255));
+        buttonsPanel.setBackground(colorBackground);
         buttonsPanel.setPreferredSize(new Dimension(1280, 40));
         buttonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        buttonsPanel.add(speed);
+        buttonsPanel.add(turn);
+        buttonsPanel.add(fastMode);
         buttonsPanel.add(hideShow);
+        buttonsPanel.add(finish);
+    }
+    public void newOpponent(){
+        cpu.setWarrior(wc.getRandomWarrior());
+        cpu.setWeapon();
+    }
+
+    public void startRound(){
+        turnNum = 0;
+        fastMode.setVisible(true);
+        turn.setVisible(true);
+        finish.setVisible(false);
+        cpu.setCurrentHP(cpu.getWarrior().getHp());
+        user.setCurrentHP(user.getWarrior().getHp());
+        console.setText("");
     }
 
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        PopUp p = new PopUp(this, colorBackground, colorButton);
+        if(user.getCurrentHP() > 0){// WIN
+            newOpponent();
+            startRound();
+        }else{// LOSE
+            // Guardar en BBDD
+            user.setWeapon(null);
+            dispose();
+        }
+    }
 }
