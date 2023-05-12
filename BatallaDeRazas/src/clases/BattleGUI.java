@@ -66,14 +66,23 @@ public class BattleGUI extends JFrame implements ActionListener{
         combatPanel.setPreferredSize(new Dimension(1280, 680));
         combatPanel.setLayout(new BorderLayout());
 
-        console = new JTextArea(2000, 30);
+        console = new JTextArea(2000, 35);
         console.setPreferredSize(new Dimension(300, 680));
         console.setEditable(false);
         console.setOpaque(true);
         console.setBackground(colorBackground);
 
+        try {
+            console.setFont(Font.createFont(Font.TRUETYPE_FONT, new File(
+                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(13f));
+        } catch (FontFormatException e) {
+            console.setFont(new Font("Serif", Font.ITALIC, 17));
+        } catch (IOException e) {
+            System.out.println("NO");
+            console.setFont(new Font("Serif", Font.ITALIC, 17));
+        }
 
-        console.setFont(new Font("Serif", Font.ITALIC, 17));
+
         console.setForeground(Color.WHITE);
 
         scrollPane = new JScrollPane(console);
@@ -140,7 +149,11 @@ public class BattleGUI extends JFrame implements ActionListener{
                     turnNum = (turnNum + 1) % 2;
                     console.append(msg);
                 }else{
-                    console.append("BATALLA FINALIZADA");
+                    if(cpu.getCurrentHP() == 0){
+                        console.append("YOU WIN THE BATTLE");
+                    } else{
+                        console.append("YOU LOSE");
+                    }
                     finish.setVisible(true);
                     turn.setVisible(false);
                     fastMode.setVisible(false);
@@ -157,7 +170,11 @@ public class BattleGUI extends JFrame implements ActionListener{
                     turnNum = (turnNum + 1) % 2;
                     console.append(msg);
                 }
-                console.append("BATALLA FINALIZADA");
+                if(cpu.getCurrentHP() == 0){
+                    console.append("YOU WIN THE BATTLE");
+                } else{
+                    console.append("YOU LOSE");
+                }
                 finish.setVisible(true);
                 turn.setVisible(false);
                 fastMode.setVisible(false);

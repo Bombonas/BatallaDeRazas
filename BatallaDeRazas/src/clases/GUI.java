@@ -11,6 +11,8 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class GUI extends JFrame {
@@ -27,7 +29,8 @@ public class GUI extends JFrame {
     private WarriorContainer wc;
     private ArrayList<CharacterAnimationDetails> characterAnim;
     private String[] paths;
-    private Font pixelFont;
+    private Font pixelFont, rankingFont;
+    private JLabel[][] labelMatrix;
 
     public GUI(Player usr, Player cpu, WarriorContainer wc) {
 
@@ -75,6 +78,8 @@ public class GUI extends JFrame {
         try {
             pixelFont = Font.createFont(Font.TRUETYPE_FONT, new File(
                     "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(32f);
+            rankingFont = Font.createFont(Font.TRUETYPE_FONT, new File(
+                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(13f);
             stages = new BufferedImage[3];
             stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
             stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
@@ -188,6 +193,55 @@ public class GUI extends JFrame {
                 BufferedImage.TYPE_INT_ARGB)));
         stagePanel.add(label1);
 
+        //Initialize Ranking panel
+        tabRanking.setLayout(new GridLayout(11, 5));
+        labelMatrix = new JLabel[11][5];
+
+        //Initialize headers columns
+        labelMatrix[0][0] = new JLabel("PLAYER ID");
+        labelMatrix[0][0].setFont(rankingFont);
+        labelMatrix[0][0].setForeground(Color.WHITE);
+
+        labelMatrix[0][1] = new JLabel("NAME");
+        labelMatrix[0][1].setFont(rankingFont);
+        labelMatrix[0][1].setForeground(Color.WHITE);
+
+        labelMatrix[0][2] = new JLabel("WARRIOR");
+        labelMatrix[0][2].setFont(rankingFont);
+        labelMatrix[0][2].setForeground(Color.WHITE);
+
+        labelMatrix[0][3] = new JLabel("WEAPON");
+        labelMatrix[0][3].setFont(rankingFont);
+        labelMatrix[0][3].setForeground(Color.WHITE);
+
+        labelMatrix[0][4] = new JLabel("WON COMBATS");
+        labelMatrix[0][4].setFont(rankingFont);
+        labelMatrix[0][4].setForeground(Color.WHITE);
+
+        // DDBB QUERY
+        DataBaseConn conn = new DataBaseConn();
+        ResultSet rs = conn.getQueryRS(
+                "SELECT players.id, players.name, " +
+                "CONCAT(warriors.name, ' - ' ,races.race) as warrior, weapons.name, count(rounds.id) as rounds\n" +
+                "FROM players\n" +
+                "JOIN warriors ON warriors.id = players.warrior_id\n" +
+                "JOIN races ON races.id = warriors.race_id\n" +
+                "JOIN weapons ON weapons.id = players.weapon_id\n" +
+                "JOIN battles ON battles.player_id = players.id\n" +
+                "JOIN rounds ON rounds.battle_id = battles.id\n" +
+                "WHERE rounds.battle_points > 0 \n" +
+                "GROUP BY players.id\n" +
+                "ORDER BY count(rounds.id)DESC;");
+        try {
+            rs.next();
+            for (int i = 1; i < 11; ++i) {
+                for (int j = 0; j < 5; ++j) {
+
+                }
+            }
+        }catch (SQLException e){
+            System.out.println(e);
+        }
 
         //Initialize JTabbedPane with tabs for character, weapon, stage and ranking, as well as size of the tab pane
         tabPane = new JTabbedPane();

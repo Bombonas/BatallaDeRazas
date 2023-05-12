@@ -26,21 +26,21 @@ public class Player {
 		// Set the atack chance 
 		int missChance = rand.nextInt(100)+1;
 		if(getTotalAgility()*10 >= missChance) {
-			ret += "El ataque ha acertado";
+			ret += "Successful Attack";
 			
 			int dodgeChance = rand.nextInt(50)+1;
 			if(defender.getTotalAgility() < dodgeChance) {
 				int atckDmg = getTotalStrength() - defender.getTotalDefense();
-                ret += "\nEl defensor ha sufrido " + atckDmg + " de daño";
+                ret += "\nDefender has suffered " + atckDmg + " damage points";
 				if(defender.getCurrentHP()-atckDmg < 0) {
 					defender.setCurrentHP(0);
 				}else {
 					defender.setCurrentHP(defender.getCurrentHP()-atckDmg);
 				}
 				
-			}else ret += "\nEl defensor ha esquivado el ataque";
+			}else ret += "\nDefender has dodged the attack";
 			
-		}else  ret += "El ataque ha fallado";
+		}else  ret += "Missed attack";
 
         return ret + "\n\n";
 	}
