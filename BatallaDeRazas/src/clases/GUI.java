@@ -114,7 +114,7 @@ public class GUI extends JFrame {
             rankingFont = Font.createFont(Font.TRUETYPE_FONT, new File(
                     "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(16f);
             rankingInfoFont = Font.createFont(Font.TRUETYPE_FONT, new File(
-                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(11f);
+                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(11.75f);
             stages = new BufferedImage[3];
             stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
             stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
@@ -251,33 +251,31 @@ public class GUI extends JFrame {
         // DDBB QUERY
         DataBaseConn conn = new DataBaseConn();
         ResultSet rs = conn.getQueryRS(
-                "SELECT players.id, players.name, " +
-                "warriors.name as warrior, weapons.name, count(rounds.id) as rounds\n" +
-                "FROM players\n" +
-                "JOIN warriors ON warriors.id = players.warrior_id\n" +
-                "JOIN weapons ON weapons.id = players.weapon_id\n" +
-                "JOIN battles ON battles.player_id = players.id\n" +
-                "JOIN rounds ON rounds.battle_id = battles.id\n" +
-                "WHERE rounds.battle_points > 0 \n" +
-                "GROUP BY players.id\n" +
-                "ORDER BY count(rounds.id)DESC;");
+                """
+                        SELECT players.id, players.name, warriors.name as warrior, weapons.name, count(rounds.id) as rounds
+                        FROM players
+                        JOIN warriors ON warriors.id = players.warrior_id
+                        JOIN weapons ON weapons.id = players.weapon_id
+                        JOIN battles ON battles.player_id = players.id
+                        JOIN rounds ON rounds.battle_id = battles.id
+                        WHERE rounds.battle_points > 0\s
+                        GROUP BY players.id
+                        ORDER BY count(rounds.id)DESC;""");
         try {
             for (int i = 1; i < 11; ++i) {
                 rs.next();
-                //if (rs.wasNull()) break;
                 for (int j = 0; j < 5; ++j) {
                     labelMatrix[i][j] = (rs.getString(j + 1));
                 }
             }
         }catch (SQLException e){
-            System.out.println(e);
+            System.out.println("Error executing ranking query");
         }
 
         conn.closeConn();
 
         // Paint de background and columns
         tabRanking = new EventPanel() {
-            //Draw background image and string for selecting character
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
@@ -289,22 +287,31 @@ public class GUI extends JFrame {
                     String title = "HALL OF FAME";
                     g2d.setFont(pixelFont);
                     g.drawImage(scaledBackground,0, 0, null);
-                    g2d.drawString(title, 100, 40);
-                    g2d.setColor(new Color(225, 159, 159));
-                    g2d.drawString(title, 102, 42);
+                    g2d.setColor(new Color(79, 57, 57));
+                    g2d.drawString(title, 200, 40);
+                    g2d.setColor(new Color(197, 124, 124));
+                    g2d.drawString(title, 202, 42);
                     g2d.setFont(rankingFont);
+
+                    // Variable to set the x min value and y min value
+                    int xAxis = 20;
+                    int yAxis = 80;
 
                     // Loop into the matrix to pint the columns
                     for (int i = 0; i < 11; ++i) {
-                        int xAxis = 20;
-                        int yAxis = 80;
                         if (labelMatrix[i][0] == null) break;
                         if (i == 1) g2d.setFont(rankingInfoFont);
                         for (int j = 0; j < 5; ++j) {
-                            String columns = labelMatrix[i][j];
-                            g2d.drawString(columns, j * 120 + xAxis, i * 40 + yAxis);
-                            g2d.setColor(new Color(194, 167, 167));
-                            //g2d.drawString(columns, j * 100 + xAxis + 2, i * 40 + yAxis + 2);
+                            String column = labelMatrix[i][j];
+                            if (i == 0) {
+                                g2d.setColor(new Color(56, 46, 46));
+                                g2d.drawString(column, j * 122 + xAxis, yAxis);
+                                g2d.setColor(new Color(197, 124, 124));
+                                g2d.drawString(column, j * 122 + xAxis + 2, yAxis + 2);
+                            } else {
+                                g2d.setColor(new Color(194, 167, 167));
+                                g2d.drawString(column, j * 122 + xAxis, i * 40 + yAxis);
+                            }
                         }
                     }
                 } catch (IOException e) {
@@ -320,7 +327,7 @@ public class GUI extends JFrame {
         tabPane.setPreferredSize(new Dimension(650, 580));
         tabPane.addTab("Character", tabCharacters);
         tabPane.addTab("Weapons", tabWeapons);
-        //tabPane.setIconAt(1, new ImageIcon(stages[0].getScaledInstance(100, 20,
+        // tabPane.setIconAt(1, new ImageIcon(stages[0].getScaledInstance(100, 20,
         //        BufferedImage.TYPE_INT_ARGB)));
         tabPane.addTab("Stage", tabStage);
         tabPane.addTab("Ranking", tabRanking);

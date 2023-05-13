@@ -8,10 +8,11 @@ import java.io.File;
 import java.io.IOException;
 
 public class BattlePanel extends JPanel {
-    private BufferedImage imgBackground, player, enemy;
+    private BufferedImage player, enemy;
+    private Image imgBackground;
 
     public BattlePanel(BufferedImage imgBackground){
-        this.imgBackground = imgBackground;
+        this.imgBackground = imgBackground.getScaledInstance(1280, 680, BufferedImage.SCALE_DEFAULT);
         repaint();
     }
 
