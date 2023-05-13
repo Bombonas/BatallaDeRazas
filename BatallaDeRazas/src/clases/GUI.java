@@ -30,8 +30,8 @@ public class GUI extends JFrame {
     private WarriorContainer wc;
     private ArrayList<CharacterAnimationDetails> characterAnim;
     private String[] paths;
-    private Font pixelFont, rankingFont;
-    private JLabel[][] labelMatrix;
+    private Font pixelFont, rankingFont, rankingInfoFont;
+    private String[][] labelMatrix;
 
     public GUI(Player usr, Player cpu, WarriorContainer wc) {
 
@@ -102,7 +102,9 @@ public class GUI extends JFrame {
             pixelFont = Font.createFont(Font.TRUETYPE_FONT, new File(
                     "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(32f);
             rankingFont = Font.createFont(Font.TRUETYPE_FONT, new File(
-                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(13f);
+                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(16f);
+            rankingInfoFont = Font.createFont(Font.TRUETYPE_FONT, new File(
+                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(11f);
             stages = new BufferedImage[3];
             stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
             stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
@@ -239,42 +241,22 @@ public class GUI extends JFrame {
 
         //Initialize Ranking panel
         tabRanking.setLayout(new GridLayout(11, 5));
-        labelMatrix = new JLabel[11][5];
+        labelMatrix = new String[11][5];
 
         //Initialize headers columns
-        labelMatrix[0][0] = new JLabel("PLAYER ID");
-        labelMatrix[0][0].setFont(rankingFont);
-        labelMatrix[0][0].setForeground(Color.WHITE);
-        tabRanking.add(labelMatrix[0][0]);
-
-        labelMatrix[0][1] = new JLabel("NAME");
-        labelMatrix[0][1].setFont(rankingFont);
-        labelMatrix[0][1].setForeground(Color.WHITE);
-        tabRanking.add(labelMatrix[0][1]);
-
-        labelMatrix[0][2] = new JLabel("WARRIOR");
-        labelMatrix[0][2].setFont(rankingFont);
-        labelMatrix[0][2].setForeground(Color.WHITE);
-        tabRanking.add(labelMatrix[0][2]);
-
-        labelMatrix[0][3] = new JLabel("WEAPON");
-        labelMatrix[0][3].setFont(rankingFont);
-        labelMatrix[0][3].setForeground(Color.WHITE);
-        tabRanking.add(labelMatrix[0][3]);
-
-        labelMatrix[0][4] = new JLabel("WON COMBATS");
-        labelMatrix[0][4].setFont(rankingFont);
-        labelMatrix[0][4].setForeground(Color.WHITE);
-        tabRanking.add(labelMatrix[0][4]);
+        labelMatrix[0][0] = "PLAYER ID";
+        labelMatrix[0][1] = "NAME";
+        labelMatrix[0][2] = "WARRIOR";
+        labelMatrix[0][3] = "WEAPON";
+        labelMatrix[0][4] = "WON COMBATS";
 
         // DDBB QUERY
         DataBaseConn conn = new DataBaseConn();
         ResultSet rs = conn.getQueryRS(
                 "SELECT players.id, players.name, " +
-                "CONCAT(warriors.name, ' - ' ,races.race) as warrior, weapons.name, count(rounds.id) as rounds\n" +
+                "warriors.name as warrior, weapons.name, count(rounds.id) as rounds\n" +
                 "FROM players\n" +
                 "JOIN warriors ON warriors.id = players.warrior_id\n" +
-                "JOIN races ON races.id = warriors.race_id\n" +
                 "JOIN weapons ON weapons.id = players.weapon_id\n" +
                 "JOIN battles ON battles.player_id = players.id\n" +
                 "JOIN rounds ON rounds.battle_id = battles.id\n" +
@@ -284,16 +266,54 @@ public class GUI extends JFrame {
         try {
             for (int i = 1; i < 11; ++i) {
                 rs.next();
+                //if (rs.wasNull()) break;
                 for (int j = 0; j < 5; ++j) {
-                    labelMatrix[i][j] = new JLabel(rs.getString(i + 1));
-                    labelMatrix[i][j].setFont(rankingFont);
-                    labelMatrix[i][j].setForeground(Color.WHITE);
-                    tabRanking.add(labelMatrix[i][j]);
+                    labelMatrix[i][j] = (rs.getString(j + 1));
                 }
             }
         }catch (SQLException e){
             System.out.println(e);
         }
+
+        conn.closeConn();
+
+        // Paint de background and columns
+        tabRanking = new EventPanel() {
+            //Draw background image and string for selecting character
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                try {
+                    BufferedImage characterBackground = ImageIO.read(new File(
+                            "BatallaDeRazas/src/background/ranking.png"));
+                    Image scaledBackground = characterBackground.getScaledInstance(this.getWidth(), this.getHeight(),
+                            BufferedImage.TYPE_INT_ARGB);
+                    String title = "HALL OF FAME";
+                    g2d.setFont(pixelFont);
+                    g.drawImage(scaledBackground,0, 0, null);
+                    g2d.drawString(title, 100, 40);
+                    g2d.setColor(new Color(225, 159, 159));
+                    g2d.drawString(title, 102, 42);
+                    g2d.setFont(rankingFont);
+
+                    // Loop into the matrix to pint the columns
+                    for (int i = 0; i < 11; ++i) {
+                        int xAxis = 20;
+                        int yAxis = 80;
+                        if (labelMatrix[i][0] == null) break;
+                        if (i == 1) g2d.setFont(rankingInfoFont);
+                        for (int j = 0; j < 5; ++j) {
+                            String columns = labelMatrix[i][j];
+                            g2d.drawString(columns, j * 120 + xAxis, i * 40 + yAxis);
+                            g2d.setColor(new Color(194, 167, 167));
+                            //g2d.drawString(columns, j * 100 + xAxis + 2, i * 40 + yAxis + 2);
+                        }
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
 
         //Initialize JTabbedPane with tabs for character, weapon, stage and ranking, as well as size of the tab pane
         tabPane = new JTabbedPane();
