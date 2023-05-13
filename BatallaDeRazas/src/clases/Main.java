@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class Main {
 
 	public static void main(String[] args) {
-		//Instance the warriors container
+
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (ClassNotFoundException e) {
@@ -20,6 +20,8 @@ public class Main {
 		} catch (UnsupportedLookAndFeelException e) {
 			throw new RuntimeException(e);
 		}
+
+		//Instance the warriors container
 		WarriorContainer warriorList = new WarriorContainer();
 
 		// Instance the players

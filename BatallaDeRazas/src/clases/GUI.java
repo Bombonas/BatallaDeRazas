@@ -358,7 +358,12 @@ public class GUI extends JFrame {
                         //If the player hasn't selected a weapon, throw exception
                         throw new NoWeaponSelected();
                     }else{
-                        //GUI.super.dispose();
+                        boolean comp = false;
+                        while(!comp) {
+                            String name = JOptionPane.showInputDialog("Chose your name");
+                            if (name != null && !name.isBlank()) comp = true;
+                        }
+
                         new BattleGUI(usr, cpu, wc, selectedBackground);
                         GUI.super.dispose();
                     }
