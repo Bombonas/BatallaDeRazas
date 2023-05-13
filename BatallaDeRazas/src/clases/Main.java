@@ -1,5 +1,6 @@
 package clases;
 
+import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -8,6 +9,17 @@ public class Main {
 
 	public static void main(String[] args) {
 		//Instance the warriors container
+		try {
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		} catch (ClassNotFoundException e) {
+			throw new RuntimeException(e);
+		} catch (InstantiationException e) {
+			throw new RuntimeException(e);
+		} catch (IllegalAccessException e) {
+			throw new RuntimeException(e);
+		} catch (UnsupportedLookAndFeelException e) {
+			throw new RuntimeException(e);
+		}
 		WarriorContainer warriorList = new WarriorContainer();
 
 		// Instance the players

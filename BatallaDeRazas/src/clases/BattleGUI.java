@@ -32,6 +32,7 @@ public class BattleGUI extends JFrame implements ActionListener{
     public BattleGUI(Player user, Player cpu, WarriorContainer wc,BufferedImage imgBackground){
         setSize(1280, 720);
         setResizable(false);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
         orderTurns = new ArrayList<Player>();

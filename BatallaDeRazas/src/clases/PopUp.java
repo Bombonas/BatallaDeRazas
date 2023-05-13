@@ -14,7 +14,7 @@ public class PopUp extends JDialog {
     public PopUp(BattleGUI frame, Color background, Color buttons){
         super(frame, true);
         setSize(400, 150);
-        setLocation(500, 500);
+        setLocationRelativeTo(null);
         globalPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         //new BoxLayout(buttonPanel, BoxLayout.X_AXIS)
         buttonPanel = new JPanel();

@@ -3,6 +3,8 @@ package clases;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
+import javax.swing.plaf.nimbus.AbstractRegionPainter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,13 +14,14 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class GUI extends JFrame {
-    private JPanel mainPanel, tabsPanel, tabStage, tabRanking, characterPanel, fightPanel;
-    private EventPanel stagePanel, tabCharacters, tabWeapons;
+    private JPanel mainPanel, tabsPanel, tabRanking, characterPanel, fightPanel;
+    private EventPanel stagePanel, tabCharacters, tabWeapons, tabStage;
     private JButton fightButton;
     private JLabel label1, labelCharacterPanel, labelSelectedWeapon, labelCPUwarrior, labelCPUWeapon;
     private JLabel[] labelStages, labelCharacters, weaponLabel;
@@ -42,6 +45,7 @@ public class GUI extends JFrame {
         //Define JFrame properties: size, close operation, title, location
         setSize(1280,720);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        //setUndecorated(true);
         setTitle("Race Wars");
         setResizable(false);
         setLocationRelativeTo(null);
@@ -49,8 +53,16 @@ public class GUI extends JFrame {
         //Initialize JPanels
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
-        tabsPanel = new JPanel();
-        tabsPanel.setLayout(new BoxLayout(tabsPanel, BoxLayout.Y_AXIS));
+        tabsPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                g.setColor(new Color(87, 54, 44));
+                g.fillRect(0, 0,getWidth(), getHeight());
+            }
+        };
+        tabsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0,0));
+        tabsPanel.setPreferredSize(new Dimension(650, 500));
         tabWeapons = new EventPanel() {
             //Draw background for weapons tab
             protected void paintComponent(Graphics g) {
@@ -67,7 +79,7 @@ public class GUI extends JFrame {
             }
         };
         tabWeapons.addMouseListener(tabWeapons);
-        tabStage = new JPanel();
+        tabStage = new EventPanel();
         tabRanking = new JPanel();
         characterPanel = new JPanel() {
             protected void paintComponent(Graphics g) {
@@ -76,9 +88,9 @@ public class GUI extends JFrame {
                 try {
                     BufferedImage characterPanelBackground = ImageIO.read(new File(
                             "BatallaDeRazas/src/background/charactersSelectedBackground.jpg"));
-                    Image scaledBackground = characterPanelBackground.getScaledInstance(650,
-                            100,Image.SCALE_SMOOTH);
-                    g.drawImage(scaledBackground, 0, 0, this);
+                    Image scaledBackground = characterPanelBackground.getScaledInstance(this.getWidth(),
+                            this.getHeight(),BufferedImage.TYPE_INT_ARGB);
+                    g2d.drawImage(scaledBackground, 0, 0, this);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -90,9 +102,7 @@ public class GUI extends JFrame {
                 g2d.drawString(text2, 480, 70);
             }
         };
-        System.out.println(characterPanel.getWidth());
-        System.out.println(characterPanel.getHeight());
-        characterPanel.setPreferredSize(new Dimension(300, 100));
+        characterPanel.setPreferredSize(new Dimension(650, 100));
         stagePanel = new EventPanel();
         stagePanel.setLayout(new BorderLayout());
         fightPanel = new JPanel();
@@ -140,6 +150,8 @@ public class GUI extends JFrame {
                 64, 32));
         characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(8).getName(), characters[8], 5,
                 64, 32));
+        //New arraylist for cpu character's animations
+        ArrayList<CharacterAnimationDetails> cpuChars = (ArrayList<CharacterAnimationDetails>)characterAnim.clone();
 
         //Initialize Character panel and prepare it for animations
         tabCharacters = new EventPanel() {
@@ -170,7 +182,7 @@ public class GUI extends JFrame {
         labelCPUwarrior = new JLabel();
         labelSelectedWeapon = new JLabel();
         labelCPUWeapon = new JLabel();
-        characterPanel.setLayout(new BoxLayout(characterPanel, BoxLayout.X_AXIS));
+        characterPanel.setLayout(new BoxLayout(characterPanel, BoxLayout.LINE_AXIS));
         characterPanel.add(labelSelectedWeapon);
         characterPanel.add(labelCharacterPanel);
         characterPanel.add(labelCPUwarrior);
@@ -181,6 +193,7 @@ public class GUI extends JFrame {
             tabCharacters.add(labelCharacters[i]);
         }
         //Set a timer to update frames for the animations
+
         timer = new Timer(150, new ActionListener() {
             //ActionListener calls to the updateFrame method from the CharacterAnimationDetails class
             public void actionPerformed(ActionEvent e) {
@@ -193,11 +206,26 @@ public class GUI extends JFrame {
                             //Lower height value for dwarf characters
                             labelCharacterPanel.setIcon(new ImageIcon(subimage.getScaledInstance(250, 100,
                                     Image.SCALE_SMOOTH)));
-                        }else {
+                        }else{
                             labelCharacterPanel.setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
                                     Image.SCALE_SMOOTH)));
                         }
-                    }else if (ch.getName().equals(cpu.getWarrior().getName())) {
+                    }
+                    //Fill character tab with every available character
+                    if (i > 5) {
+                        labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(250, 100,
+                                BufferedImage.TYPE_INT_ARGB)));
+                    }else{
+                        labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
+                                BufferedImage.TYPE_INT_ARGB)));
+                    }
+                    i++;
+                }
+                //Animate character for CPU in character panel
+                int j = 0;
+                for (CharacterAnimationDetails chCPU: cpuChars) {
+                    BufferedImage subimage = chCPU.updateFrame();
+                    if (chCPU.getName().equals(cpu.getWarrior().getName())) {
                         BufferedImage cpuFlip = new BufferedImage(subimage.getWidth(), subimage.getHeight(),
                                 subimage.getType());
                         Graphics2D g2d = cpuFlip.createGraphics();
@@ -206,25 +234,16 @@ public class GUI extends JFrame {
                         g2d.transform(flipImage);
                         g2d.drawImage(subimage, 0, 0, null);
                         g2d.dispose();
-                        if (i > 5) {
+                        if (j > 5) {
                             //Lower height value for dwarf characters
                             labelCPUwarrior.setIcon(new ImageIcon(cpuFlip.getScaledInstance(250, 100,
                                     Image.SCALE_SMOOTH)));
                         }else {
                             labelCPUwarrior.setIcon(new ImageIcon(cpuFlip.getScaledInstance(250, 250,
-                                    Image.SCALE_SMOOTH)));
+                                        Image.SCALE_SMOOTH)));
                         }
                     }
-                    //Fill character tab with every available character
-                    if (i <= 5) {
-                        labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
-                                BufferedImage.TYPE_INT_ARGB)));
-                    }else{
-                        //Lowe height value for dwarf characters
-                        labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(250, 100,
-                                BufferedImage.TYPE_INT_ARGB)));
-                    }
-                    i++;
+                    j++;
                 }
             }
         });
@@ -288,10 +307,14 @@ public class GUI extends JFrame {
         }
 
         //Initialize JTabbedPane with tabs for character, weapon, stage and ranking, as well as size of the tab pane
+        UIManager.put("TabbedPane.font", pixelFont.deriveFont(25f));
+        //TODO check this UIManager.put("TabbedPane:TabbedPaneTab[Focused+MouseOver+Selected].backgroundPainter", null);
         tabPane = new JTabbedPane();
-        tabPane.setPreferredSize(new Dimension(650, 500));
+        tabPane.setPreferredSize(new Dimension(650, 580));
         tabPane.addTab("Character", tabCharacters);
         tabPane.addTab("Weapons", tabWeapons);
+        //tabPane.setIconAt(1, new ImageIcon(stages[0].getScaledInstance(100, 20,
+        //        BufferedImage.TYPE_INT_ARGB)));
         tabPane.addTab("Stage", tabStage);
         tabPane.addTab("Ranking", tabRanking);
         fightPanel.setPreferredSize(new Dimension(200, 100));
@@ -309,9 +332,9 @@ public class GUI extends JFrame {
         for (int i = 0; i < labelStages.length; i++) {
             labelStages[i] = new JLabel(new ImageIcon(stages[i].getScaledInstance(700, 200,
                     BufferedImage.TYPE_INT_ARGB)));
-            labelStages[i].addMouseListener(stagePanel);
             tabStage.add(labelStages[i]);
         }
+        tabStage.addMouseListener(tabStage);
 
         //Fill weapons tab with selectable weapons from user's warrior
         tabWeapons.setLayout(new FlowLayout());
@@ -414,22 +437,12 @@ public class GUI extends JFrame {
         public void mouseClicked(MouseEvent e) {
             Component clickedComponent = getComponentAt(e.getPoint());
             //Change to stage 1
-            if (e.getSource().equals(labelStages[0])) {
-                selectedBackground = stages[0];
-                label1.setIcon(new ImageIcon(stages[0].getScaledInstance(620, 590,
-                        BufferedImage.TYPE_INT_ARGB)));
-            }
-            //Change to stage 2
-            else if (e.getSource().equals(labelStages[1])) {
-                selectedBackground = stages[1];
-                label1.setIcon(new ImageIcon(stages[1].getScaledInstance(620, 590,
-                        BufferedImage.TYPE_INT_ARGB)));
-            }
-            //Change to stage 3
-            else if (e.getSource().equals(labelStages[2])) {
-                selectedBackground = stages[2];
-                label1.setIcon(new ImageIcon(stages[2].getScaledInstance(620, 590,
-                        BufferedImage.TYPE_INT_ARGB)));
+            for (int i = 0; i < stages.length; i++) {
+                if (clickedComponent.equals(labelStages[i])) {
+                    selectedBackground = stages[i];
+                    label1.setIcon(new ImageIcon(stages[i].getScaledInstance(620, 590,
+                            BufferedImage.TYPE_INT_ARGB)));
+                }
             }
             //Remove weapon images from previous character and set the images available for the current
             //selected character
