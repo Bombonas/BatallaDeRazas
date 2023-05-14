@@ -6,15 +6,15 @@ import javax.swing.border.LineBorder;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import javax.swing.plaf.nimbus.AbstractRegionPainter;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
+import java.awt.event.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.rmi.server.UID;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -165,9 +165,56 @@ public class GUI extends JFrame {
         characterPanel.add(labelCharacterPanel);
         characterPanel.add(labelCPUwarrior);
         characterPanel.add(labelCPUWeapon);
+        UIManager.put("info",Color.BLUE);
+        Painter<JComponent> woodenTab = new Painter<JComponent>() {
+            @Override
+            public void paint(Graphics2D g, JComponent object, int w, int h) {
+                Color lightBrown = new Color(215, 187, 131);
+                Color darkBrown = new Color(131, 90, 29);
+                g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                // Create wood grain texture
+                int grainSize = 10;
+                BufferedImage texture = new BufferedImage(grainSize, grainSize, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D textureGraphics = texture.createGraphics();
+                textureGraphics.setColor(lightBrown);
+                textureGraphics.fillRect(0, 0, grainSize, grainSize);
+                textureGraphics.setColor(darkBrown);
+                textureGraphics.drawLine(0, grainSize / 2, grainSize, grainSize / 2);
+                textureGraphics.dispose();
+
+                // Paint wooden background
+                TexturePaint texturePaint = new TexturePaint(texture, new Rectangle(0, 0, grainSize, grainSize));
+                g.setPaint(texturePaint);
+                g.fillRoundRect(2, 2, w - 4, h - 4, 8, 8);
+
+                // Draw wooden border
+                g.setColor(darkBrown);
+                g.setStroke(new BasicStroke(2));
+                g.drawRoundRect(2, 2, w - 4, h - 4, 8, 8);
+            }
+        };
+        UIManager.put("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter", woodenTab);
+        UIManager.put("TabbedPane:TabbedPaneTab[Enabled+MouseOver].backgroundPainter", woodenTab);
+        UIManager.put("TabbedPane:TabbedPaneTab[Focused+MouseOver+Selected].backgroundPainter", woodenTab);
+        UIManager.put("TabbedPane:TabbedPaneTab[Focused+Pressed+Selected].backgroundPainter", woodenTab);
+        UIManager.put("TabbedPane:TabbedPaneTab[Focused+Selected].backgroundPainter", woodenTab);
+        UIManager.put("TabbedPane:TabbedPaneTab[Selected].backgroundPainter", woodenTab);
+        UIManager.put("TabbedPane:TabbedPaneTab[MouseOver+Selected].backgroundPainter", woodenTab);
+
+
+        //UIManager.put("info", pixelFont);
+        UIManager.put("ToolTip.font", pixelFont.deriveFont(18f));
         //Fill characters panel with empty labels that will be replaced with animated characters images
         for (int i = 0; i < labelCharacters.length; i++) {
             labelCharacters[i] = new JLabel();
+            labelCharacters[i].setToolTipText("<html>"+wc.getWarriors().get(i).getName()+"<br>"+
+                                              "Race: "+wc.getWarriors().get(i).getRace()+"<br>"+
+                                              "HP: "+wc.getWarriors().get(i).getHp()+ "<br>"+
+                                              "Strength: "+wc.getWarriors().get(i).getStrength()+"<br>"+
+                                              "Defense: "+wc.getWarriors().get(i).getDefense() + "<br>"+
+                                              "Speed: "+wc.getWarriors().get(i).getSpeed()+"<br>"+
+                                              "Agility: "+wc.getWarriors().get(i).getAgility()+"</html>");
             tabCharacters.add(labelCharacters[i]);
         }
         //Set a timer to update frames for the animations
@@ -230,6 +277,7 @@ public class GUI extends JFrame {
         });
         //Add mouse listener to characters tab and start timer
         tabCharacters.addMouseListener(tabCharacters);
+        //tabCharacters.addMouseMotionListener(tabCharacters);
         timer.start();
 
         //Set default stage
@@ -445,7 +493,7 @@ public class GUI extends JFrame {
         return false;
     }
     //Internal JPanel implementation with MouseListener events for selected stages, weapons and characters
-    class EventPanel extends JPanel implements MouseListener {
+    class EventPanel extends JPanel implements MouseListener, MouseMotionListener {
         public void mouseClicked(MouseEvent e) {
             Component clickedComponent = getComponentAt(e.getPoint());
             //Change to stage 1
@@ -491,6 +539,19 @@ public class GUI extends JFrame {
         public void mouseReleased(MouseEvent e) {}
         public void mouseEntered(MouseEvent e) {}
         public void mouseExited(MouseEvent e) {}
+
+        public void mouseDragged(MouseEvent e) {
+
+        }
+
+        public void mouseMoved(MouseEvent e) {
+            Component characterPointed = getComponentAt(e.getPoint());
+            for (int i = 0; i < labelCharacters.length; i++) {
+                if (characterPointed.equals(labelCharacters[i])) {
+                    System.out.println("hola");
+                }
+            }
+        }
     }
 }
 class NoWeaponSelected extends Exception {
