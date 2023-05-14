@@ -222,7 +222,7 @@ public class GUI extends JFrame {
         }
         //Set a timer to update frames for the animations
 
-        timer = new Timer(250, new ActionListener() {
+        timer = new Timer(150, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for (int i = 0; i < characters.length; i++) {
                     //Get number of frames for each character's animation by dividing image's width with image's height
