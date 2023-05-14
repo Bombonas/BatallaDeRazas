@@ -31,10 +31,10 @@ public class GUI extends JFrame {
     private Timer timer;
     private Player usr, cpu;
     private WarriorContainer wc;
-    private ArrayList<CharacterAnimationDetails> characterAnim;
     private String[] paths;
     private Font pixelFont, rankingFont;
     private JLabel[][] labelMatrix;
+    private int currentFrame = 0, frameCount, frameSize;
 
     public GUI(Player usr, Player cpu, WarriorContainer wc) {
 
@@ -129,30 +129,6 @@ public class GUI extends JFrame {
         } catch (FontFormatException e) {
             throw new RuntimeException(e);
         }
-        //Initialize arrayList to give frameCount value, X width and Y height values to animate characters according
-        //to their needs
-        characterAnim = new ArrayList<CharacterAnimationDetails>();
-        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(0).getName(), characters[0], 4,
-                200, 190));
-        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(1).getName(), characters[1], 10,
-                162, 150));
-        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(2).getName(), characters[2], 10,
-                140, 120));
-        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(3).getName(), characters[3], 8,
-                150, 140));
-        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(4).getName(), characters[4], 10,
-                100, 100));
-        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(5).getName(), characters[5], 10,
-                126, 116));
-        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(6).getName(), characters[6], 5,
-                64, 32));
-        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(7).getName(), characters[7], 5,
-                64, 32));
-        characterAnim.add(new CharacterAnimationDetails(wc.getWarriors().get(8).getName(), characters[8], 5,
-                64, 32));
-        //New arraylist for cpu character's animations
-        ArrayList<CharacterAnimationDetails> cpuChars = (ArrayList<CharacterAnimationDetails>)characterAnim.clone();
-
         //Initialize Character panel and prepare it for animations
         tabCharacters = new EventPanel() {
             //Draw background image and string for selecting character
@@ -194,15 +170,21 @@ public class GUI extends JFrame {
         }
         //Set a timer to update frames for the animations
 
-        timer = new Timer(150, new ActionListener() {
-            //ActionListener calls to the updateFrame method from the CharacterAnimationDetails class
+        timer = new Timer(250, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                int i = 0;
-                for (CharacterAnimationDetails ch: characterAnim) {
-                    BufferedImage subimage = ch.updateFrame();
-                    //Set the default selected character by getting player's current warrior
-                    if (ch.getName().equals(usr.getWarrior().getName())) {
+                for (int i = 0; i < characters.length; i++) {
+                    //Get number of frames for each character's animation by dividing image's width with image's height
+                    frameCount = characters[i].getWidth()/characters[i].getHeight();
+                    //Get width of each frame by dividing width of the image by number of frames
+                    frameSize = characters[i].getWidth()/frameCount;
+                    currentFrame = (currentFrame + 1) % frameCount;
+                    BufferedImage subimage = characters[i].getSubimage(currentFrame*frameSize, 0, frameSize, frameSize);
+                    //Set selected character's animation in the selected character panel
+                    if (wc.getWarriors().get(i).getName().equals(usr.getWarrior().getName())) {
+                        //Different values for dwarfs
                         if (i > 5) {
+                            frameSize = (characters[i].getWidth()/frameCount) / 4;
+                            subimage = characters[i].getSubimage(currentFrame*frameSize, 1, frameSize, frameSize-32);
                             //Lower height value for dwarf characters
                             labelCharacterPanel.setIcon(new ImageIcon(subimage.getScaledInstance(250, 100,
                                     Image.SCALE_SMOOTH)));
@@ -211,21 +193,19 @@ public class GUI extends JFrame {
                                     Image.SCALE_SMOOTH)));
                         }
                     }
-                    //Fill character tab with every available character
                     if (i > 5) {
+                        //Different values for dwarfs
+                        frameSize = (characters[i].getWidth()/frameCount) / 4;
+                        subimage = characters[i].getSubimage(currentFrame*frameSize, 1, frameSize, frameSize-32);
                         labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(250, 100,
                                 BufferedImage.TYPE_INT_ARGB)));
-                    }else{
+                    }else {
                         labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(250, 250,
                                 BufferedImage.TYPE_INT_ARGB)));
+
                     }
-                    i++;
-                }
-                //Animate character for CPU in character panel
-                int j = 0;
-                for (CharacterAnimationDetails chCPU: cpuChars) {
-                    BufferedImage subimage = chCPU.updateFrame();
-                    if (chCPU.getName().equals(cpu.getWarrior().getName())) {
+                    //Set cpu's character animation and flip image to face player's character
+                    if (wc.getWarriors().get(i).getName().equals(cpu.getWarrior().getName())) {
                         BufferedImage cpuFlip = new BufferedImage(subimage.getWidth(), subimage.getHeight(),
                                 subimage.getType());
                         Graphics2D g2d = cpuFlip.createGraphics();
@@ -234,16 +214,15 @@ public class GUI extends JFrame {
                         g2d.transform(flipImage);
                         g2d.drawImage(subimage, 0, 0, null);
                         g2d.dispose();
-                        if (j > 5) {
+                        if (i > 5) {
                             //Lower height value for dwarf characters
                             labelCPUwarrior.setIcon(new ImageIcon(cpuFlip.getScaledInstance(250, 100,
                                     Image.SCALE_SMOOTH)));
-                        }else {
+                        } else {
                             labelCPUwarrior.setIcon(new ImageIcon(cpuFlip.getScaledInstance(250, 250,
-                                        Image.SCALE_SMOOTH)));
+                                    Image.SCALE_SMOOTH)));
                         }
                     }
-                    j++;
                 }
             }
         });
@@ -285,16 +264,16 @@ public class GUI extends JFrame {
         DataBaseConn conn = new DataBaseConn();
         ResultSet rs = conn.getQueryRS(
                 "SELECT players.id, players.name, " +
-                "CONCAT(warriors.name, ' - ' ,races.race) as warrior, weapons.name, count(rounds.id) as rounds\n" +
-                "FROM players\n" +
-                "JOIN warriors ON warriors.id = players.warrior_id\n" +
-                "JOIN races ON races.id = warriors.race_id\n" +
-                "JOIN weapons ON weapons.id = players.weapon_id\n" +
-                "JOIN battles ON battles.player_id = players.id\n" +
-                "JOIN rounds ON rounds.battle_id = battles.id\n" +
-                "WHERE rounds.battle_points > 0 \n" +
-                "GROUP BY players.id\n" +
-                "ORDER BY count(rounds.id)DESC;");
+                        "CONCAT(warriors.name, ' - ' ,races.race) as warrior, weapons.name, count(rounds.id) as rounds\n" +
+                        "FROM players\n" +
+                        "JOIN warriors ON warriors.id = players.warrior_id\n" +
+                        "JOIN races ON races.id = warriors.race_id\n" +
+                        "JOIN weapons ON weapons.id = players.weapon_id\n" +
+                        "JOIN battles ON battles.player_id = players.id\n" +
+                        "JOIN rounds ON rounds.battle_id = battles.id\n" +
+                        "WHERE rounds.battle_points > 0 \n" +
+                        "GROUP BY players.id\n" +
+                        "ORDER BY count(rounds.id)DESC;");
         try {
             rs.next();
             for (int i = 1; i < 11; ++i) {

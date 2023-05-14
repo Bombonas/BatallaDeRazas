@@ -130,4 +130,12 @@ public class Player {
         return totalSpeed;
     }
 
+    public int getTotalHP() {
+        int totalHP = this.getWarrior().getHp() + this.getWeapon().getHp();
+        for(Weapon item: items) {
+            totalHP += item.getHp();
+        }
+        return totalHP;
+    }
+
 }

@@ -63,7 +63,7 @@ public class BattleGUI extends JFrame implements ActionListener{
     }
 
     public void setCombatPanel(){
-        combatPanel = new BattlePanel(imgBackground);
+        combatPanel = new BattlePanel(imgBackground, user, cpu);
         combatPanel.setPreferredSize(new Dimension(1280, 680));
         combatPanel.setLayout(new BorderLayout());
 
@@ -152,13 +152,16 @@ public class BattleGUI extends JFrame implements ActionListener{
                 }else{
                     if(cpu.getCurrentHP() == 0){
                         console.append("YOU WIN THE BATTLE");
+                        combatPanel.repaint();
                     } else{
                         console.append("YOU LOSE");
+                        combatPanel.repaint();
                     }
                     finish.setVisible(true);
                     turn.setVisible(false);
                     fastMode.setVisible(false);
                 }
+                combatPanel.repaint();
             }
         });
 
@@ -173,9 +176,12 @@ public class BattleGUI extends JFrame implements ActionListener{
                 }
                 if(cpu.getCurrentHP() == 0){
                     console.append("YOU WIN THE BATTLE");
+                    combatPanel.repaint();
                 } else{
                     console.append("YOU LOSE");
+                    combatPanel.repaint();
                 }
+                combatPanel.repaint();
                 finish.setVisible(true);
                 turn.setVisible(false);
                 fastMode.setVisible(false);
@@ -207,6 +213,7 @@ public class BattleGUI extends JFrame implements ActionListener{
         finish.setVisible(false);
         cpu.setCurrentHP(cpu.getWarrior().getHp());
         user.setCurrentHP(user.getWarrior().getHp());
+        //TODO Sumar al user.CurrentHP los bonus de vida de los items
         console.setText("");
     }
 
@@ -230,8 +237,10 @@ public class BattleGUI extends JFrame implements ActionListener{
         if(user.getCurrentHP() > 0){// WIN
             newOpponent();
             startRound();
+            combatPanel.repaint( );
         }else{// LOSE
             user.setWeapon(null);
+            newOpponent();
             new GUI(user, cpu, wc);
             dispose();
         }
