@@ -11,6 +11,7 @@ public class Player {
 	private ArrayList<Weapon> items;
 	
 	public Player(Warrior w, String name) {
+        //TODO doble declaracion items
         items = new ArrayList<Weapon>();
 		Random rand = new Random();
         this.name = name;
@@ -44,7 +45,8 @@ public class Player {
 
         return ret + "\n\n";
 	}
-	
+
+    //TODO metodo sin usar
 	public boolean swapTurn(Player defender) {
 		// 
 		boolean ret = true;

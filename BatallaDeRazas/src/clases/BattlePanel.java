@@ -73,6 +73,7 @@ public class BattlePanel extends JPanel {
             g2.drawString("YOU DIED", 450, 320);
         } else if (cpu.getCurrentHP() == 0) {
             g2.setColor(new Color(255, 190, 48));
+            //TODO cambiar mensaje
             g2.drawString("YOU DEFEATED", 330, 320);
         }
     }

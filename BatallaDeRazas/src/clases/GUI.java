@@ -155,7 +155,8 @@ public class GUI extends JFrame {
         };
         tabCharacters.setLayout(new GridLayout(3, 3));
         labelCharacters = new JLabel[9];
-        //Label will include selected character
+        //Character panel with 2 labels for each current warrior of both player and cpu
+        //2 additional labels to display current weapons for both selected warriors
         labelCharacterPanel = new JLabel();
         labelCPUwarrior = new JLabel();
         labelSelectedWeapon = new JLabel();
@@ -165,7 +166,7 @@ public class GUI extends JFrame {
         characterPanel.add(labelCharacterPanel);
         characterPanel.add(labelCPUwarrior);
         characterPanel.add(labelCPUWeapon);
-        UIManager.put("info",Color.BLUE);
+        //Change look of tabs for JTabbedPane, so it they have a more wooden pixel art style creating a new Painter
         Painter<JComponent> woodenTab = new Painter<JComponent>() {
             @Override
             public void paint(Graphics2D g, JComponent object, int w, int h) {
@@ -194,7 +195,7 @@ public class GUI extends JFrame {
                 g.drawRoundRect(2, 2, w - 4, h - 4, 8, 8);
             }
         };
-
+        //Apply the new Painter wooden texture to every tab, in every possible state of the tab
         UIManager.put("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter", woodenTab);
         UIManager.put("TabbedPane:TabbedPaneTab[Enabled+MouseOver].backgroundPainter", woodenTab);
         UIManager.put("TabbedPane:TabbedPaneTab[Focused+MouseOver+Selected].backgroundPainter", woodenTab);
@@ -203,9 +204,10 @@ public class GUI extends JFrame {
         UIManager.put("TabbedPane:TabbedPaneTab[Selected].backgroundPainter", woodenTab);
         UIManager.put("TabbedPane:TabbedPaneTab[MouseOver+Selected].backgroundPainter", woodenTab);
 
+        //TODO posiblemente haya que borrar esto
         //UIManager.put("info", pixelFont);
-        UIManager.put("ToolTip.font", pixelFont.deriveFont(18f));
-        //Fill characters panel with empty labels that will be replaced with animated characters images
+        //UIManager.put("ToolTip.font", pixelFont.deriveFont(18f));
+        //Fill characters panel with empty labels that will be filled with animated characters images
         for (int i = 0; i < labelCharacters.length; i++) {
             labelCharacters[i] = new JLabel();
             /*
@@ -221,14 +223,15 @@ public class GUI extends JFrame {
             tabCharacters.add(labelCharacters[i]);
         }
         //Set a timer to update frames for the animations
-
         timer = new Timer(150, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for (int i = 0; i < characters.length; i++) {
-                    //Get number of frames for each character's animation by dividing image's width with image's height
+                    //Get number of frames for each character's animation by dividing image's width by image's height
                     frameCount = characters[i].getWidth()/characters[i].getHeight();
                     //Get width of each frame by dividing width of the image by number of frames
                     frameSize = characters[i].getWidth()/frameCount;
+                    //Update currentFrame every iteration and return its value to 0 upon reaching maximum frameCount
+                    //for the animation
                     currentFrame = (currentFrame + 1) % frameCount;
                     BufferedImage subimage = characters[i].getSubimage(currentFrame*frameSize, 0, frameSize, frameSize);
                     //Set selected character's animation in the selected character panel
@@ -243,6 +246,7 @@ public class GUI extends JFrame {
                                     Image.SCALE_SMOOTH)));
                         }
                     }
+                    //Set every selectable character's animation into the labels
                     if (i > 5) {
                         //Different values for dwarfs
                         labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(250, 100,
@@ -252,7 +256,6 @@ public class GUI extends JFrame {
                                 BufferedImage.TYPE_INT_ARGB)));
 
                     }
-
                     //Set cpu's character animation and flip image to face player's character
                     if (wc.getWarriors().get(i).getName().equals(cpu.getWarrior().getName())) {
                         BufferedImage cpuFlip = new BufferedImage(subimage.getWidth(), subimage.getHeight(),
@@ -278,7 +281,6 @@ public class GUI extends JFrame {
         });
         //Add mouse listener to characters tab and start timer
         tabCharacters.addMouseListener(tabCharacters);
-        //tabCharacters.addMouseMotionListener(tabCharacters);
         timer.start();
 
         //Set default stage
@@ -290,7 +292,7 @@ public class GUI extends JFrame {
         tabRanking.setLayout(new GridLayout(11, 5));
         labelMatrix = new String[11][5];
 
-        //Initialize headers columns
+        //Initialize header columns
         labelMatrix[0][0] = "PLAYER ID";
         labelMatrix[0][1] = "NAME";
         labelMatrix[0][2] = "WARRIOR";
@@ -324,7 +326,7 @@ public class GUI extends JFrame {
 
         conn.closeConn();
 
-        // Paint de background and columns
+        // Paint background and columns
         tabRanking = new EventPanel() {
             //Draw background image and string for selecting character
             protected void paintComponent(Graphics g) {
@@ -343,7 +345,7 @@ public class GUI extends JFrame {
                     g2d.drawString(title, 102, 42);
                     g2d.setFont(rankingFont);
 
-                    // Loop into the matrix to pint the columns
+                    // Loop into the matrix to paint the columns
                     for (int i = 0; i < 11; ++i) {
                         int xAxis = 20;
                         int yAxis = 80;
@@ -363,14 +365,11 @@ public class GUI extends JFrame {
         };
 
         //Initialize JTabbedPane with tabs for character, weapon, stage and ranking, as well as size of the tab pane
-        UIManager.put("TabbedPane.font", pixelFont.deriveFont(25f));
-        //TODO check this UIManager.put("TabbedPane:TabbedPaneTab[Focused+MouseOver+Selected].backgroundPainter", null);
+        UIManager.put("TabbedPane.font", pixelFont.deriveFont(25f));//Set tab's font
         tabPane = new JTabbedPane();
         tabPane.setPreferredSize(new Dimension(650, 580));
         tabPane.addTab("Character", tabCharacters);
         tabPane.addTab("Weapons", tabWeapons);
-        //tabPane.setIconAt(1, new ImageIcon(stages[0].getScaledInstance(100, 20,
-        //        BufferedImage.TYPE_INT_ARGB)));
         tabPane.addTab("Stage", tabStage);
         tabPane.addTab("Ranking", tabRanking);
         fightPanel.setPreferredSize(new Dimension(200, 100));
@@ -425,8 +424,6 @@ public class GUI extends JFrame {
                 }
             }
         });
-
-
         //Add main panel to JFrame and set visible
         add(mainPanel);
         setVisible(true);
@@ -459,6 +456,7 @@ public class GUI extends JFrame {
             }
         }
     }
+    //Display current selected weapon for both fighters
     public void setSelectedWeaponImage() {
         BufferedImage selectedWeapon;
         BufferedImage cpuWeapon;
