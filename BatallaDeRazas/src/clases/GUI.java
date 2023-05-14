@@ -233,9 +233,10 @@ public class GUI extends JFrame {
         timer.start();
 
         //Set default stage
-        label1 = new JLabel(new ImageIcon(stages[0].getScaledInstance(620, 590,
+        label1 = new JLabel(new ImageIcon(stages[0].getScaledInstance(620, 510,
                 BufferedImage.TYPE_INT_ARGB)));
         stagePanel.add(label1);
+        stagePanel.setBackground(new Color(87, 54, 44));
 
         //Initialize Ranking panel
         tabRanking.setLayout(new GridLayout(11, 5));
@@ -332,6 +333,7 @@ public class GUI extends JFrame {
         tabPane.addTab("Stage", tabStage);
         tabPane.addTab("Ranking", tabRanking);
         fightPanel.setPreferredSize(new Dimension(200, 100));
+        fightPanel.setBackground(new Color(87, 54, 44));
 
         //Add content to panels
         tabsPanel.add(tabPane);
@@ -459,7 +461,7 @@ public class GUI extends JFrame {
             for (int i = 0; i < stages.length; i++) {
                 if (clickedComponent.equals(labelStages[i])) {
                     selectedBackground = stages[i];
-                    label1.setIcon(new ImageIcon(stages[i].getScaledInstance(620, 590,
+                    label1.setIcon(new ImageIcon(stages[i].getScaledInstance(620, 510,
                             BufferedImage.TYPE_INT_ARGB)));
                 }
             }

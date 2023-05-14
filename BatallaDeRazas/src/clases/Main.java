@@ -93,7 +93,6 @@ public class Main {
 
 						}
 
-						// TODO Cambiar el final de partida
 						System.out.println("Fin de partida:\n1-Seguir Jugandon\n2-Salir");
 						while (true) {
 							if (sc.hasNextInt()) {
