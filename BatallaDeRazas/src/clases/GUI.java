@@ -194,6 +194,7 @@ public class GUI extends JFrame {
                 g.drawRoundRect(2, 2, w - 4, h - 4, 8, 8);
             }
         };
+
         UIManager.put("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter", woodenTab);
         UIManager.put("TabbedPane:TabbedPaneTab[Enabled+MouseOver].backgroundPainter", woodenTab);
         UIManager.put("TabbedPane:TabbedPaneTab[Focused+MouseOver+Selected].backgroundPainter", woodenTab);
@@ -202,12 +203,12 @@ public class GUI extends JFrame {
         UIManager.put("TabbedPane:TabbedPaneTab[Selected].backgroundPainter", woodenTab);
         UIManager.put("TabbedPane:TabbedPaneTab[MouseOver+Selected].backgroundPainter", woodenTab);
 
-
         //UIManager.put("info", pixelFont);
         UIManager.put("ToolTip.font", pixelFont.deriveFont(18f));
         //Fill characters panel with empty labels that will be replaced with animated characters images
         for (int i = 0; i < labelCharacters.length; i++) {
             labelCharacters[i] = new JLabel();
+            /*
             labelCharacters[i].setToolTipText("<html>"+wc.getWarriors().get(i).getName()+"<br>"+
                                               "Race: "+wc.getWarriors().get(i).getRace()+"<br>"+
                                               "HP: "+wc.getWarriors().get(i).getHp()+ "<br>"+
@@ -215,6 +216,8 @@ public class GUI extends JFrame {
                                               "Defense: "+wc.getWarriors().get(i).getDefense() + "<br>"+
                                               "Speed: "+wc.getWarriors().get(i).getSpeed()+"<br>"+
                                               "Agility: "+wc.getWarriors().get(i).getAgility()+"</html>");
+
+             */
             tabCharacters.add(labelCharacters[i]);
         }
         //Set a timer to update frames for the animations
@@ -232,8 +235,6 @@ public class GUI extends JFrame {
                     if (wc.getWarriors().get(i).getName().equals(usr.getWarrior().getName())) {
                         //Different values for dwarfs
                         if (i > 5) {
-                            frameSize = (characters[i].getWidth()/frameCount) / 4;
-                            subimage = characters[i].getSubimage(currentFrame*frameSize, 1, frameSize, frameSize-32);
                             //Lower height value for dwarf characters
                             labelCharacterPanel.setIcon(new ImageIcon(subimage.getScaledInstance(250, 100,
                                     Image.SCALE_SMOOTH)));
@@ -244,8 +245,6 @@ public class GUI extends JFrame {
                     }
                     if (i > 5) {
                         //Different values for dwarfs
-                        frameSize = (characters[i].getWidth()/frameCount) / 4;
-                        subimage = characters[i].getSubimage(currentFrame*frameSize, 1, frameSize, frameSize-32);
                         labelCharacters[i].setIcon(new ImageIcon(subimage.getScaledInstance(250, 100,
                                 BufferedImage.TYPE_INT_ARGB)));
                     }else {
@@ -253,6 +252,7 @@ public class GUI extends JFrame {
                                 BufferedImage.TYPE_INT_ARGB)));
 
                     }
+
                     //Set cpu's character animation and flip image to face player's character
                     if (wc.getWarriors().get(i).getName().equals(cpu.getWarrior().getName())) {
                         BufferedImage cpuFlip = new BufferedImage(subimage.getWidth(), subimage.getHeight(),
@@ -273,6 +273,7 @@ public class GUI extends JFrame {
                         }
                     }
                 }
+
             }
         });
         //Add mouse listener to characters tab and start timer
@@ -493,7 +494,7 @@ public class GUI extends JFrame {
         return false;
     }
     //Internal JPanel implementation with MouseListener events for selected stages, weapons and characters
-    class EventPanel extends JPanel implements MouseListener, MouseMotionListener {
+    class EventPanel extends JPanel implements MouseListener {
         public void mouseClicked(MouseEvent e) {
             Component clickedComponent = getComponentAt(e.getPoint());
             //Change to stage 1
@@ -540,18 +541,6 @@ public class GUI extends JFrame {
         public void mouseEntered(MouseEvent e) {}
         public void mouseExited(MouseEvent e) {}
 
-        public void mouseDragged(MouseEvent e) {
-
-        }
-
-        public void mouseMoved(MouseEvent e) {
-            Component characterPointed = getComponentAt(e.getPoint());
-            for (int i = 0; i < labelCharacters.length; i++) {
-                if (characterPointed.equals(labelCharacters[i])) {
-                    System.out.println("hola");
-                }
-            }
-        }
     }
 }
 class NoWeaponSelected extends Exception {

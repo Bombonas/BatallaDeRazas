@@ -23,7 +23,6 @@ public class BattlePanel extends JPanel {
     private JPanel panel;
 
     public BattlePanel(BufferedImage imgBackground, Player usr, Player cpu){
-        charactersAnimations();
         this.imgBackground = imgBackground;
         this.usr = usr;
         this.cpu = cpu;
@@ -35,7 +34,7 @@ public class BattlePanel extends JPanel {
         panel = this;
         animNum = 0;
 
-
+        charactersAnimations();
         repaint();
     }
 
@@ -120,7 +119,6 @@ public class BattlePanel extends JPanel {
                     frameSize = playersImgs[i].getWidth() / frameCount;
                     currentFrame = (currentFrame + 1) % frameCount;
                     BufferedImage subimage = playersImgs[i].getSubimage(currentFrame * frameSize, 0, frameSize, frameSize);
-
                     if(i==1){// FLIP CPU IMAGE
                         AffineTransform flipImage = AffineTransform.getScaleInstance(-1, 1);
                         flipImage.translate(-subimage.getWidth(), 0);
@@ -129,9 +127,6 @@ public class BattlePanel extends JPanel {
                     }
                     // RESIZE THE IMAGES
                     if (players[i].getWarrior().getRace().equals("dwarf")) {
-                        //DIfferent for dwarfs
-                        //frameSize = (playersImgs[i].getWidth() / frameCount) / 4;
-                       //subimage = playersImgs[i].getSubimage(currentFrame * frameSize, 1, frameSize, frameSize - 32);
                         actualFrame[i] = new ImageIcon(subimage.getScaledInstance(350, 200, Image.SCALE_SMOOTH));
                     } else {
                         actualFrame[i] = new ImageIcon(subimage.getScaledInstance(500, 500, Image.SCALE_SMOOTH));
