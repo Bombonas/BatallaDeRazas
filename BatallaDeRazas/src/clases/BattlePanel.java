@@ -44,16 +44,20 @@ public class BattlePanel extends JPanel {
         g.setColor(red);
         float hpUsr = (float)(usr.getCurrentHP())/ usr.getTotalHP();
         float hpCpu = (float)(cpu.getCurrentHP())/ cpu.getTotalHP();
+        int cpuY = 300;
+
+        // Set diferent height for a boss
+        if(!cpu.getWarrior().getplayable()) cpuY = 200;
 
         //Player and CPU missing HP Bar
         g.setColor(gray);
-        g.fillRoundRect(100, 300, 150 , 10, 7, 7);
-        g.fillRoundRect(600, 300, 150 , 10, 7, 7);
+        g.fillRoundRect(150, 350, 150 , 10, 7, 7);// PLAYER
+        g.fillRoundRect(620, cpuY, 150 , 10, 7, 7);// CPU
 
         //Player and CPU actual HP Bar
         g.setColor(red);
-        g.fillRoundRect(100, 300, Math.round(150 * hpUsr) , 10, 7, 7);
-        g.fillRoundRect(600, 300, Math.round(150 * hpCpu), 10, 7, 7);
+        g.fillRoundRect(150, 350, Math.round(150 * hpUsr) , 10, 7, 7);// PLAYER
+        g.fillRoundRect(620, cpuY, Math.round(150 * hpCpu), 10, 7, 7);// CPU
     }
 
     public void finalText(Graphics g){
@@ -130,7 +134,11 @@ public class BattlePanel extends JPanel {
                     if (players[i].getWarrior().getRace().equals("dwarf")) {
                         actualFrame[i] = new ImageIcon(subimage.getScaledInstance(350, 200, Image.SCALE_SMOOTH));
                     } else {
-                        actualFrame[i] = new ImageIcon(subimage.getScaledInstance(500, 500, Image.SCALE_SMOOTH));
+                        if(!cpu.getWarrior().getplayable() && i==1){
+                            actualFrame[i] = new ImageIcon(subimage.getScaledInstance(800, 800, Image.SCALE_SMOOTH));
+                        }else {
+                            actualFrame[i] = new ImageIcon(subimage.getScaledInstance(500, 500, Image.SCALE_SMOOTH));
+                        }
                     }
                 }
                 animNum = 0;// Set to the idle animation
@@ -143,21 +151,28 @@ public class BattlePanel extends JPanel {
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        g.drawImage(imgBackground, 0, 0, this);
+
+        ImageIcon backgroundIcon = new ImageIcon(imgBackground.getScaledInstance(1280, 680, Image.SCALE_SMOOTH));
+        backgroundIcon.paintIcon(this, g, 0, 0);
         drawnHPBars(g);
         finalText(g);
-
+        int cpuYpos = 200, cpuXpos = 450, userXPosdwarf = 0, userYPosdwarf = 0, cpuXPosdwarf = 0, cpuYPosdwarf = 0;
+        if(!cpu.getWarrior().getplayable()){
+            cpuXpos = 300;
+            cpuYpos = 50;
+        }
+        if(cpu.getWarrior().getRace().equals("dwarf") ){
+            cpuXPosdwarf = 100;
+            cpuYPosdwarf = 130;
+        }
+        if(usr.getWarrior().getRace().equals("dwarf")){
+            userXPosdwarf = 100;
+            userYPosdwarf = 150;
+        }
         //charactersAnimations();
         if(actualFrame[0] != null && actualFrame[1] != null ) {
-            actualFrame[0].paintIcon(this, g, -50, 200);
-            actualFrame[1].paintIcon(this, g, 450, 200);
+            actualFrame[0].paintIcon(this, g, -50+ userXPosdwarf, 250 + userYPosdwarf);
+            actualFrame[1].paintIcon(this, g, cpuXpos + cpuXPosdwarf, cpuYpos + cpuYPosdwarf);
         }
-
-
-        /*
-        g.drawImage(actualFrame[0], 100, 300, this);
-        g.drawImage(actualFrame[1], 600, 300, this);
-         */
-
     }
 }

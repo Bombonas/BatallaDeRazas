@@ -124,6 +124,8 @@ public class Warrior {
 
 	public String getName() { return name; }
 
+	public boolean getplayable(){ return playable; }
+
 	public String toString() {
 
 		return name + ":\nWeapons: " + weapons +

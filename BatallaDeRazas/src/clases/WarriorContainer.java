@@ -11,11 +11,11 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class WarriorContainer {
-	private ArrayList<Warrior> warriors;
+	private ArrayList<Warrior> warriors, bosses;
 	
 	public WarriorContainer() {
-
 		warriors = new ArrayList<Warrior>();
+		bosses = new ArrayList<Warrior>();
 
 		// ArrayList with all the weapons
 		ArrayList<Weapon> weaponList = new ArrayList<Weapon>();
@@ -40,7 +40,7 @@ public class WarriorContainer {
 
 			int race; // int keep the actual warrior race
 
-			int position = 0; // int to know the position in ArrayList warriors
+			int warriorPosition = 0, bossPosition = 0; // int to know the position in ArrayList warriors
 
 			while (rs1.next()) {
 				// Keep the race_id of the actual warrior
@@ -56,16 +56,28 @@ public class WarriorContainer {
 					weaponAvailable.add(weaponList.get(rs2.getInt(1) - 1));
 				}
 
-				// Instance the new warrior in the ArrayList warriors using the first query(rs1)
-				warriors.add(new Warrior(rs1.getBoolean(1), rs1.getString(2),
-						rs1.getInt(3), rs1.getInt(4), rs1.getInt(5),
-						rs1.getInt(6), rs1.getInt(7), rs1.getString(8),
-						rs1.getString(9), rs1.getString(10), rs1.getInt(11),
-						rs1.getInt(12), rs1.getString(13)));
+				if(race != 4) {
+					// Instance the new warrior in the ArrayList warriors using the first query(rs1)
+					warriors.add(new Warrior(rs1.getBoolean(1), rs1.getString(2),
+							rs1.getInt(3), rs1.getInt(4), rs1.getInt(5),
+							rs1.getInt(6), rs1.getInt(7), rs1.getString(8),
+							rs1.getString(9), rs1.getString(10), rs1.getInt(11),
+							rs1.getInt(12), rs1.getString(13)));
 
-				// Set the weapons list of this warrior then sum one in the variable position
-				warriors.get(position).setWeapons(weaponAvailable);
-				position ++;
+					// Set the weapons list of this warrior then sum one in the variable position
+					warriors.get(warriorPosition).setWeapons(weaponAvailable);
+					warriorPosition++;
+				}else{
+					bosses.add(new Warrior(rs1.getBoolean(1), rs1.getString(2),
+							rs1.getInt(3), rs1.getInt(4), rs1.getInt(5),
+							rs1.getInt(6), rs1.getInt(7), rs1.getString(8),
+							rs1.getString(9), rs1.getString(10), rs1.getInt(11),
+							rs1.getInt(12), rs1.getString(13)));
+
+					// Set the weapons list of this warrior then sum one in the variable position
+					bosses.get(bossPosition).setWeapons(weaponAvailable);
+					bossPosition++;
+				}
 			}
 
 			conn1.closeConn();
@@ -81,12 +93,25 @@ public class WarriorContainer {
 		return warriors;
 	}
 
+	public ArrayList<Warrior> getBosses(){
+		return bosses;
+	}
+
 	public Warrior getRandomWarrior() { // Method to get a random warrior from the ArrayList
 		Warrior w;
 
 		Random rand = new Random();
-
 		w = warriors.get(rand.nextInt(warriors.size()));
+
+
+		return w;
+	}
+
+	public Warrior getRandomBoss() { // Method to get a random warrior from the ArrayList
+		Warrior w;
+
+		Random rand = new Random();
+		w = bosses.get(rand.nextInt(bosses.size()));
 
 		return w;
 	}

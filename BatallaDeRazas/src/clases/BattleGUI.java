@@ -26,7 +26,7 @@ public class BattleGUI extends JFrame implements ActionListener{
     private Player user, cpu;
     private WarriorContainer wc;
     private ArrayList<Player> orderTurns;
-    private int turnNum;
+    private int turnNum, roundNum;
     private RoundsInfo ri;
 
     public BattleGUI(Player user, Player cpu, WarriorContainer wc,BufferedImage imgBackground){
@@ -39,6 +39,7 @@ public class BattleGUI extends JFrame implements ActionListener{
         orderTurns.add(user);
         orderTurns.add(cpu);
         turnNum = 0;
+        roundNum = 1;
 
         this.user = user;
         this.cpu = cpu;
@@ -147,7 +148,9 @@ public class BattleGUI extends JFrame implements ActionListener{
                 String msg;
                 if(cpu.getCurrentHP() > 0 & user.getCurrentHP() > 0) {
                     msg = orderTurns.get(turnNum).atack(orderTurns.get((turnNum + 1) % 2));
-                    turnNum = (turnNum + 1) % 2;
+                    if(orderTurns.get(turnNum).swapTurn(orderTurns.get((turnNum + 1) % 2))) {
+                        turnNum = (turnNum + 1) % 2;
+                    }
                     console.append(msg);
                 }else{
                     if(cpu.getCurrentHP() == 0){
@@ -171,7 +174,9 @@ public class BattleGUI extends JFrame implements ActionListener{
                 String msg;
                 while(cpu.getCurrentHP() > 0 & user.getCurrentHP() > 0){
                     msg = orderTurns.get(turnNum).atack(orderTurns.get((turnNum + 1) % 2));
-                    turnNum = (turnNum + 1) % 2;
+                    if(orderTurns.get(turnNum).swapTurn(orderTurns.get((turnNum + 1) % 2))) {
+                        turnNum = (turnNum + 1) % 2;
+                    }
                     console.append(msg);
                 }
                 if(cpu.getCurrentHP() == 0){
@@ -200,14 +205,21 @@ public class BattleGUI extends JFrame implements ActionListener{
         buttonsPanel.add(finish);
     }
     public void newOpponent(){
-        cpu.setWarrior(wc.getRandomWarrior());
-        cpu.setWeapon();
-        ri.setIdOpponent(cpu.getWarrior().getIdWarrior());
-        ri.setIdOpponentWeapon(cpu.getWeapon().getIdWeapon());
+        if(roundNum%4 == 0){// BOSS ROUND
+            cpu.setWarrior(wc.getRandomBoss());
+            cpu.setWeapon();
+            ri.setIdOpponent(cpu.getWarrior().getIdWarrior());
+            ri.setIdOpponentWeapon(cpu.getWeapon().getIdWeapon());
+        }else {// NORMAL ROUND
+            cpu.setWarrior(wc.getRandomWarrior());
+            cpu.setWeapon();
+            ri.setIdOpponent(cpu.getWarrior().getIdWarrior());
+            ri.setIdOpponentWeapon(cpu.getWeapon().getIdWeapon());
+        }
     }
 
     public void startRound(){
-        turnNum = 0;
+        turnNum = 1;
         fastMode.setVisible(true);
         turn.setVisible(true);
         finish.setVisible(false);
@@ -235,13 +247,14 @@ public class BattleGUI extends JFrame implements ActionListener{
 
         PopUp p = new PopUp(this, colorBackground, colorButton);
         if(user.getCurrentHP() > 0){// WIN
+            ++roundNum;
             newOpponent();
             startRound();
             combatPanel.repaint( );
         }else{// LOSE
+            roundNum = 1;
             newOpponent();
             user.setWeapon(null);
-            newOpponent();
             new GUI(user, cpu, wc);
             dispose();
         }

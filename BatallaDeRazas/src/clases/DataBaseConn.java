@@ -7,6 +7,7 @@ public class DataBaseConn {
 
     private Connection conn;
     private Statement stmnt;
+    private ResultSet rs;
 
     public DataBaseConn() {
         String url = "jdbc:mysql://localhost/raceWar?serverTimezone=UTC";
@@ -25,6 +26,9 @@ public class DataBaseConn {
             // Instance the statement object with the connection
             stmnt = conn.createStatement();
 
+            // Start the ResultSet
+            rs = null;
+
         } catch (ClassNotFoundException e) {
             System.out.println("Driver not charged successfully");
         } catch (SQLException e) {
@@ -35,7 +39,6 @@ public class DataBaseConn {
 
     public ResultSet getQueryRS(String query) {
 
-        ResultSet rs = null;
         try {
             rs = stmnt.executeQuery(query);
         } catch (SQLException e) {
@@ -59,6 +62,8 @@ public class DataBaseConn {
     public void closeConn() {
 
         try {
+            if (rs != null) rs.close();
+            stmnt.close();
             conn.close();
         } catch (SQLException e) {
             System.out.println("Error in close");

@@ -28,18 +28,18 @@ public class Player {
 		int missChance = rand.nextInt(100)+1;
 		if(getTotalAgility()*10 >= missChance) {
 			ret += "Successful Attack";
-			
-			int dodgeChance = rand.nextInt(50)+1;
-			if(defender.getTotalAgility() < dodgeChance) {
-				int atckDmg = getTotalStrength() - defender.getTotalDefense();
+
+            int dodgeChance = rand.nextInt(50)+1;
+            if(defender.getTotalAgility()/2 < dodgeChance) {
+                int atckDmg = getTotalStrength() - defender.getTotalDefense();
                 ret += "\nDefender has suffered " + atckDmg + " damage points";
-				if(defender.getCurrentHP()-atckDmg < 0) {
-					defender.setCurrentHP(0);
-				}else {
-					defender.setCurrentHP(defender.getCurrentHP()-atckDmg);
-				}
-				
-			}else ret += "\nDefender has dodged the attack";
+                if(defender.getCurrentHP()-atckDmg < 0) {
+                    defender.setCurrentHP(0);
+                }else {
+                    defender.setCurrentHP(defender.getCurrentHP()-atckDmg);
+                }
+
+            }else ret += "\nDefender has dodged the attack";
 			
 		}else  ret += "Missed attack";
 
@@ -52,7 +52,7 @@ public class Player {
 		boolean ret = true;
 		if(getTotalSpeed() > defender.getTotalSpeed()) {
 			Random rand = new Random();
-			int chanceSpeed = getTotalSpeed() + defender.getTotalSpeed();
+			int chanceSpeed = (getTotalSpeed() - defender.getTotalSpeed()) * 10;
 			if(chanceSpeed >= rand.nextInt(100)+1) {
 				ret = false;
 			}
