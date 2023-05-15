@@ -23,7 +23,7 @@ public class GUI extends JFrame {
     private JPanel mainPanel, tabsPanel, tabRanking, characterPanel, fightPanel;
     private EventPanel stagePanel, tabCharacters, tabWeapons, tabStage;
     private JButton fightButton, fleeButton;
-    private JLabel label1, labelCharacterPanel, labelSelectedWeapon, labelCPUwarrior, labelCPUWeapon, labelPlayerStats;
+    private JLabel label1, labelCharacterPanel, labelSelectedWeapon, labelCPUwarrior, labelCPUWeapon;
     private JLabel[] labelStages, weaponLabel;
     private CharacterLabel[] labelCharacters;
     private JTabbedPane tabPane;
@@ -396,7 +396,6 @@ public class GUI extends JFrame {
         setWarriorWeaponsImages();
         setSelectedWeaponImage();
         //Initialize fight button and add it to fightPanel, as well as flee button
-        labelPlayerStats = new JLabel("holi");
         fightButton = new JButton("FIGHT!");
         fleeButton = new JButton("FLEE?");
         fleeButton.setIcon(new ImageIcon(fleeButtonImage.getScaledInstance(76, 76,
