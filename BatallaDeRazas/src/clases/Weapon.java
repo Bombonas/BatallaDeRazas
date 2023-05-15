@@ -9,10 +9,11 @@ public class Weapon {
 	private int speed;
 	private int defeatPoints;
 	private int idWeapon;
+    private int quality;
 	private String url;
 	
 	 public Weapon(String name, int hp, int strength, int defense, int agility, int speed, int defeatPoints,
-	            int idWeapon, String url) {
+	            int idWeapon, String url, int quality) {
 	        super();
 	        this.name = name;
 	        this.hp = hp;
@@ -23,6 +24,7 @@ public class Weapon {
 	        this.defeatPoints = defeatPoints;
 	        this.idWeapon = idWeapon;
             this.url = url;
+            this.quality = quality;
 	}
 	
 	public String getName() {
@@ -79,9 +81,9 @@ public class Weapon {
     public void setUrl(String url) {
         this.url = url;
     }
-
+    public int getQuality(){ return quality;}
     public String toString() {
-         return name;
+         return name+ " " +quality;
     }
 	
 }

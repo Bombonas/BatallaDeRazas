@@ -12,16 +12,25 @@ import java.util.Random;
 
 public class WarriorContainer {
 	private ArrayList<Warrior> warriors, bosses;
+	private ArrayList<Weapon> items;
 	
 	public WarriorContainer() {
 		warriors = new ArrayList<Warrior>();
 		bosses = new ArrayList<Warrior>();
+		items = new ArrayList<Weapon>();
 
 		// ArrayList with all the weapons
 		ArrayList<Weapon> weaponList = new ArrayList<Weapon>();
-		for (Weapon w : new WeaponContainer().getWeapons()) {
+
+		WeaponContainer wc = new WeaponContainer();
+		for (Weapon w : wc.getWeapons()) {
 			weaponList.add(w);
 		}
+
+		for(Weapon w : wc.getItems()){
+			items.add(w);
+		}
+
 
 		// ArrayList to fill each warrior weapons
 		ArrayList<Weapon> weaponAvailable = new ArrayList<Weapon>();
@@ -113,6 +122,17 @@ public class WarriorContainer {
 		Random rand = new Random();
 		w = bosses.get(rand.nextInt(bosses.size()));
 
+		return w;
+	}
+
+	public Weapon getRandomItem(int quality){
+		Random rand = new Random();
+		Weapon w;
+
+		while(true){
+			w = items.get(rand.nextInt(items.size()));
+			if(w.getQuality() == quality) break;
+		}
 		return w;
 	}
 

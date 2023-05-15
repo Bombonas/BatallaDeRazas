@@ -22,25 +22,24 @@ public class Player {
 	
 	public String atack(Player defender) {
 		Random rand = new Random();
-		String ret = "";
+		String ret = name + "'S TURN\n";
 		// Set the atack chance 
 		int missChance = rand.nextInt(100)+1;
 		if(getTotalAgility()*10 >= missChance) {
 			ret += "Successful Attack";
-
             int dodgeChance = rand.nextInt(50)+1;
             if(defender.getTotalAgility()/2 < dodgeChance) {
                 int atckDmg = getTotalStrength() - defender.getTotalDefense();
-                ret += "\nDefender has suffered " + atckDmg + " damage points";
+                ret += "\n"+defender.getName() + " has suffered " + atckDmg + " damage points";
                 if(defender.getCurrentHP()-atckDmg < 0) {
                     defender.setCurrentHP(0);
                 }else {
                     defender.setCurrentHP(defender.getCurrentHP()-atckDmg);
                 }
 
-            }else ret += "\nDefender has dodged the attack";
+            }else ret += "\n"+defender.getName() + " has dodged the attack";
 			
-		}else  ret += "Missed attack";
+		}else  ret += name + " missed attack";
 
         return ret + "\n\n";
 	}
@@ -95,6 +94,8 @@ public class Player {
     public String getName() { return name; }
 
     public void setName(String name) { this.name = name; }
+
+    public ArrayList<Weapon> getItems(){ return items;}
 
     public String toString() { return name + ": " + warrior.getName() + "\\" + warrior.getRace() + " - " + weapon.getName(); }
 	

@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class BattleGUI extends JFrame implements ActionListener{
     private JTextArea console;
@@ -68,7 +69,7 @@ public class BattleGUI extends JFrame implements ActionListener{
         combatPanel.setPreferredSize(new Dimension(1280, 680));
         combatPanel.setLayout(new BorderLayout());
 
-        console = new JTextArea(2000, 35);
+        console = new JTextArea(2000, 38);
         console.setPreferredSize(new Dimension(300, 680));
         console.setEditable(false);
         console.setOpaque(true);
@@ -154,10 +155,10 @@ public class BattleGUI extends JFrame implements ActionListener{
                     console.append(msg);
                 }else{
                     if(cpu.getCurrentHP() == 0){
-                        console.append("YOU WIN THE BATTLE");
+                        console.append("YOU DEFEATED");
                         combatPanel.repaint();
                     } else{
-                        console.append("YOU LOSE");
+                        console.append("YOU DIED");
                         combatPanel.repaint();
                     }
                     finish.setVisible(true);
@@ -180,10 +181,10 @@ public class BattleGUI extends JFrame implements ActionListener{
                     console.append(msg);
                 }
                 if(cpu.getCurrentHP() == 0){
-                    console.append("YOU WIN THE BATTLE");
+                    console.append("YOU DEFEATED");
                     combatPanel.repaint();
                 } else{
-                    console.append("YOU LOSE");
+                    console.append("YOU DIED");
                     combatPanel.repaint();
                 }
                 combatPanel.repaint();
@@ -206,6 +207,7 @@ public class BattleGUI extends JFrame implements ActionListener{
     }
     public void newOpponent(){
         if(roundNum%4 == 0){// BOSS ROUND
+            user.setItem(wc.getRandomItem(roundNum/4));
             cpu.setWarrior(wc.getRandomBoss());
             cpu.setWeapon();
             ri.setIdOpponent(cpu.getWarrior().getIdWarrior());
@@ -216,17 +218,40 @@ public class BattleGUI extends JFrame implements ActionListener{
             ri.setIdOpponent(cpu.getWarrior().getIdWarrior());
             ri.setIdOpponentWeapon(cpu.getWeapon().getIdWeapon());
         }
+        if(roundNum%4 == 1 && roundNum > 4){
+            // APPLY A BONUS TO THE CPU
+            cpu.setItem(wc.getRandomItem(-1));
+        }
     }
 
     public void startRound(){
-        turnNum = 1;
+        Random rand = new Random();
         fastMode.setVisible(true);
         turn.setVisible(true);
         finish.setVisible(false);
         cpu.setCurrentHP(cpu.getWarrior().getHp());
         user.setCurrentHP(user.getWarrior().getHp());
-        //TODO Sumar al user.CurrentHP los bonus de vida de los items
+
+        if(user.getItems().size() > 0){
+            for(Weapon i: user.getItems()){
+                cpu.setCurrentHP(cpu.getCurrentHP() + i.getHp());
+            }
+        }
+
         console.setText("");
+        if(user.getTotalSpeed() > cpu.getTotalSpeed()){
+            turnNum = 0;
+        }else if(cpu.getTotalSpeed() > user.getTotalSpeed()){
+            turnNum = 1;
+        }else{
+            if(user.getTotalAgility() > cpu.getTotalAgility()){
+                turnNum = 0;
+            }else if(cpu.getTotalAgility() > user.getTotalAgility()){
+                turnNum = 1;
+            }else{
+                turnNum = rand.nextInt(2);
+            }
+        }
     }
 
 

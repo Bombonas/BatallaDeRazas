@@ -420,7 +420,7 @@ public class GUI extends JFrame {
                         String name = JOptionPane.showInputDialog("Chose your name");
                         while(!comp) {
                             if ((name != null && !name.isBlank()) && name.length() <= 13) comp = true;
-                            name = JOptionPane.showInputDialog("Chose your name");
+                            else name = JOptionPane.showInputDialog("Chose your name");
                         }
 
                         usr.setName(name);
