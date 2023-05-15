@@ -301,15 +301,15 @@ public class GUI extends JFrame {
         DataBaseConn conn = new DataBaseConn();
         ResultSet rs = conn.getQueryRS(
                 "SELECT players.id, players.name, " +
-                "warriors.name as warrior, weapons.name, count(rounds.id) as rounds\n" +
-                "FROM players\n" +
-                "JOIN warriors ON warriors.id = players.warrior_id\n" +
-                "JOIN weapons ON weapons.id = players.weapon_id\n" +
-                "JOIN battles ON battles.player_id = players.id\n" +
-                "JOIN rounds ON rounds.battle_id = battles.id\n" +
-                "WHERE rounds.battle_points > 0 \n" +
-                "GROUP BY players.id\n" +
-                "ORDER BY count(rounds.id)DESC;");
+                        "warriors.name as warrior, weapons.name, count(rounds.id) as rounds\n" +
+                        "FROM players\n" +
+                        "JOIN warriors ON warriors.id = players.warrior_id\n" +
+                        "JOIN weapons ON weapons.id = players.weapon_id\n" +
+                        "JOIN battles ON battles.player_id = players.id\n" +
+                        "JOIN rounds ON rounds.battle_id = battles.id\n" +
+                        "WHERE rounds.battle_points > 0 \n" +
+                        "GROUP BY players.id\n" +
+                        "ORDER BY count(rounds.id)DESC;");
         try {
             for (int i = 1; i < 11; ++i) {
                 rs.next();
