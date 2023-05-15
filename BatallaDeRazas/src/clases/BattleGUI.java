@@ -148,7 +148,9 @@ public class BattleGUI extends JFrame implements ActionListener{
                 String msg;
                 if(cpu.getCurrentHP() > 0 & user.getCurrentHP() > 0) {
                     msg = orderTurns.get(turnNum).atack(orderTurns.get((turnNum + 1) % 2));
-                    turnNum = (turnNum + 1) % 2;
+                    if(orderTurns.get(turnNum).swapTurn(orderTurns.get((turnNum + 1) % 2))) {
+                        turnNum = (turnNum + 1) % 2;
+                    }
                     console.append(msg);
                 }else{
                     if(cpu.getCurrentHP() == 0){
@@ -172,7 +174,9 @@ public class BattleGUI extends JFrame implements ActionListener{
                 String msg;
                 while(cpu.getCurrentHP() > 0 & user.getCurrentHP() > 0){
                     msg = orderTurns.get(turnNum).atack(orderTurns.get((turnNum + 1) % 2));
-                    turnNum = (turnNum + 1) % 2;
+                    if(orderTurns.get(turnNum).swapTurn(orderTurns.get((turnNum + 1) % 2))) {
+                        turnNum = (turnNum + 1) % 2;
+                    }
                     console.append(msg);
                 }
                 if(cpu.getCurrentHP() == 0){
@@ -201,7 +205,7 @@ public class BattleGUI extends JFrame implements ActionListener{
         buttonsPanel.add(finish);
     }
     public void newOpponent(){
-        if(roundNum%5 == 0){// BOSS ROUND
+        if(roundNum%4 == 0){// BOSS ROUND
             cpu.setWarrior(wc.getRandomBoss());
             cpu.setWeapon();
             ri.setIdOpponent(cpu.getWarrior().getIdWarrior());

@@ -417,11 +417,13 @@ public class GUI extends JFrame {
                         throw new NoWeaponSelected();
                     }else{
                         boolean comp = false;
+                        String name = JOptionPane.showInputDialog("Chose your name");
                         while(!comp) {
-                            String name = JOptionPane.showInputDialog("Chose your name");
-                            if (name != null && !name.isBlank()) comp = true;
+                            if ((name != null && !name.isBlank()) && name.length() <= 13) comp = true;
+                            name = JOptionPane.showInputDialog("Chose your name");
                         }
 
+                        usr.setName(name);
                         new BattleGUI(usr, cpu, wc, selectedBackground);
                         GUI.super.dispose();
                     }
