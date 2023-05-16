@@ -52,16 +52,23 @@ public class GUI extends JFrame {
         setLocationRelativeTo(null);
 
         //Initialize JPanels
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        tabsPanel = new JPanel() {
+        mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.setColor(new Color(87, 54, 44));
-                g.fillRect(0, 0,getWidth(), getHeight());
+                Graphics2D g2d = (Graphics2D) g;
+                try {
+                    BufferedImage bg = ImageIO.read(new File("BatallaDeRazas/src/background/frameBackground.png"));
+                    Image scaledBg = bg.getScaledInstance(1280,720,BufferedImage.TYPE_INT_ARGB);
+                    g2d.drawImage(scaledBg, 0, 0, this);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         };
+        mainPanel.setLayout(new BorderLayout());
+        tabsPanel = new JPanel();
+        tabsPanel.setOpaque(false);
         tabsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0,0));
         tabsPanel.setPreferredSize(new Dimension(650, 500));
         tabWeapons = new EventPanel() {
@@ -104,10 +111,26 @@ public class GUI extends JFrame {
             }
         };
         characterPanel.setPreferredSize(new Dimension(650, 100));
-        stagePanel = new EventPanel();
+        stagePanel = new EventPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                try {
+                    BufferedImage frameStage = ImageIO.read(new File("BatallaDeRazas/src/background/stageFrame.png"));
+                    Image scaledFrame = frameStage.getScaledInstance(this.getWidth(), this.getHeight()-60,
+                            BufferedImage.TYPE_INT_ARGB);
+                    g2d.drawImage(scaledFrame, 3, -15, this);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        stagePanel.setOpaque(false);
         stagePanel.setLayout(new BorderLayout());
         fightPanel = new JPanel();
         fightPanel.setLayout(new BoxLayout(fightPanel, BoxLayout.X_AXIS));
+        fightPanel.setOpaque(false);
 
         //Define image paths for stages and characters
         try {
@@ -169,7 +192,6 @@ public class GUI extends JFrame {
         characterPanel.add(labelCharacterPanel);
         characterPanel.add(labelCPUwarrior);
         characterPanel.add(labelCPUWeapon);
-        UIManager.put("info",Color.BLUE);
         Painter<JComponent> woodenTab = new Painter<JComponent>() {
             @Override
             public void paint(Graphics2D g, JComponent object, int w, int h) {
@@ -199,6 +221,7 @@ public class GUI extends JFrame {
             }
         };
 
+        //Set every tab's state to the wooden style Painter
         UIManager.put("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter", woodenTab);
         UIManager.put("TabbedPane:TabbedPaneTab[Enabled+MouseOver].backgroundPainter", woodenTab);
         UIManager.put("TabbedPane:TabbedPaneTab[Focused+MouseOver+Selected].backgroundPainter", woodenTab);
@@ -275,10 +298,9 @@ public class GUI extends JFrame {
         timer.start();
 
         //Set default stage
-        label1 = new JLabel(new ImageIcon(stages[0].getScaledInstance(620, 410,
+        label1 = new JLabel(new ImageIcon(stages[0].getScaledInstance(468, 470,
                 BufferedImage.TYPE_INT_ARGB)));
         stagePanel.add(label1);
-        stagePanel.setBackground(new Color(87, 54, 44));
 
         //Initialize Ranking panel
         tabRanking.setLayout(new GridLayout(11, 5));
@@ -295,9 +317,10 @@ public class GUI extends JFrame {
         DataBaseConn conn = new DataBaseConn();
         ResultSet rs = conn.getQueryRS(
                 """
-                        SELECT players.id, players.name, warriors.name as warrior, weapons.name, count(rounds.id) as rounds
+                        SELECT players.name, warriors.name as warrior, weapons.name as weapon, sum(rounds.battle_points) as points, count(rounds.id) as rounds
                         FROM players
                         JOIN warriors ON warriors.id = players.warrior_id
+                        JOIN races ON races.id = warriors.race_id
                         JOIN weapons ON weapons.id = players.weapon_id
                         JOIN battles ON battles.player_id = players.id
                         JOIN rounds ON rounds.battle_id = battles.id
@@ -306,9 +329,12 @@ public class GUI extends JFrame {
                         ORDER BY count(rounds.id)DESC;""");
         try {
             for (int i = 1; i < 11; ++i) {
-                rs.next();
-                for (int j = 0; j < 5; ++j) {
-                    labelMatrix[i][j] = (rs.getString(j + 1));
+                if (rs.next()) {
+                    for (int j = 0; j < 5; ++j) {
+                        labelMatrix[i][j] = (rs.getString(j + 1));
+                    }
+                }else{
+                    break;
                 }
             }
         }catch (SQLException e){
@@ -372,7 +398,6 @@ public class GUI extends JFrame {
         tabPane.addTab("Stage", tabStage);
         tabPane.addTab("Ranking", tabRanking);
         fightPanel.setPreferredSize(new Dimension(200, 100));
-        fightPanel.setBackground(new Color(87, 54, 44));
 
         //Add content to panels
         tabsPanel.add(tabPane);
@@ -407,7 +432,7 @@ public class GUI extends JFrame {
         fightPanel.add(Box.createHorizontalGlue());
         for (int i = 0; i < fightPanel.getComponentCount(); i++) {
             if (fightPanel.getComponent(i) instanceof JButton) {
-                fightPanel.getComponent(i).setForeground(new Color(255, 51, 51));
+                fightPanel.getComponent(i).setForeground(new Color(255, 216, 216));
                 fightPanel.getComponent(i).setFont(pixelFont.deriveFont(14f));
                 ((JButton) fightPanel.getComponent(i)).setHorizontalTextPosition(SwingConstants.CENTER);
                 ((JButton) fightPanel.getComponent(i)).setVerticalTextPosition(SwingConstants.TOP);
@@ -551,7 +576,7 @@ public class GUI extends JFrame {
             for (int i = 0; i < stages.length; i++) {
                 if (clickedComponent.equals(labelStages[i])) {
                     selectedBackground = stages[i];
-                    label1.setIcon(new ImageIcon(stages[i].getScaledInstance(620, 510,
+                    label1.setIcon(new ImageIcon(stages[i].getScaledInstance(468, 470,
                             BufferedImage.TYPE_INT_ARGB)));
                 }
             }
