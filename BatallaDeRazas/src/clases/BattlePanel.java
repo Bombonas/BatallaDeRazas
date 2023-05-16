@@ -15,7 +15,6 @@ public class BattlePanel extends JPanel {
     private BufferedImage imgBackground;
     private Player usr, cpu;
     private Timer timer;
-    private int animNum;
     private BufferedImage[] playersImgs;
     private ImageIcon[] actualFrame;
     private Player[] players;
@@ -32,7 +31,6 @@ public class BattlePanel extends JPanel {
         players[0] = usr;
         players[1] = cpu;
         panel = this;
-        animNum = 0;
 
         charactersAnimations();
         repaint();
@@ -81,21 +79,26 @@ public class BattlePanel extends JPanel {
             g2.drawString("YOU DEFEATED", 330, 320);
         }
     }
-
+    //This method checks each player's current state to change the animations for the warriors
     public void changeImg(){
         try {
+            //Change user's character to attacking animation
             if (usr.isAttacking()) {
                 playersImgs[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/"+usr.getWarrior().getUrlAttack()));
                 playersImgs[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/"+cpu.getWarrior().getUrlIdle()));
+            //Change cpu's character to attacking animation
             } else if (cpu.isAttacking()) {
                 playersImgs[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + usr.getWarrior().getUrlIdle()));
                 playersImgs[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + cpu.getWarrior().getUrlAttack()));
+            //Change user's character to death animation
             }else if (usr.isDead()) {
                 playersImgs[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + usr.getWarrior().getUrlDeath()));
                 playersImgs[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + cpu.getWarrior().getUrlIdle()));
+            //Change cpu's character to death animation
             }else if (cpu.isDead()) {
                 playersImgs[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + usr.getWarrior().getUrlIdle()));
                 playersImgs[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + cpu.getWarrior().getUrlDeath()));
+            //Change both players to idle animation
             } else{
                 playersImgs[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/"+usr.getWarrior().getUrlIdle()));
                 playersImgs[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/"+cpu.getWarrior().getUrlIdle()));
@@ -135,7 +138,6 @@ public class BattlePanel extends JPanel {
                         }
                     }
                 }
-                animNum = 0;// Set to the idle animation
                 repaint();
             }
         });

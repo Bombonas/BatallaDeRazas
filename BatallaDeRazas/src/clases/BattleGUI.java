@@ -150,7 +150,6 @@ public class BattleGUI extends JFrame implements ActionListener{
                 // ONE TURN COMBAT
                 if(cpu.getCurrentHP() > 0 & user.getCurrentHP() > 0) {
                     msg = orderTurns.get(turnNum).atack(orderTurns.get((turnNum + 1) % 2));
-                    System.out.println(turnNum);
                     if(orderTurns.get(turnNum).swapTurn(orderTurns.get((turnNum + 1) % 2))) {
                         if (turnNum == 0 ) {
                             user.setDead(false);
