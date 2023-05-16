@@ -108,20 +108,28 @@ public class WarriorContainer {
 
 	public Warrior getRandomWarrior() { // Method to get a random warrior from the ArrayList
 		Warrior w;
-
 		Random rand = new Random();
 		w = warriors.get(rand.nextInt(warriors.size()));
-
-
 		return w;
 	}
 
 	public Warrior getRandomBoss() { // Method to get a random warrior from the ArrayList
 		Warrior w;
-
 		Random rand = new Random();
-		w = bosses.get(rand.nextInt(bosses.size()));
+		while(true){
+			w = bosses.get(rand.nextInt(bosses.size()));
+			if(!w.getName().equals("finalBoss")) break;
+		}
+		return w;
+	}
 
+	public Warrior getTheFinalBoss(){
+		Warrior w;
+		Random rand = new Random();
+		while(true){
+			w = bosses.get(rand.nextInt(bosses.size()));
+			if(w.getName().equals("finalBoss")) break;
+		}
 		return w;
 	}
 

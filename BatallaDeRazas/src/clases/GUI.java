@@ -483,8 +483,6 @@ public class GUI extends JFrame {
                     //Exception shows an error window
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "Error",
                             JOptionPane.ERROR_MESSAGE);
-                } {
-
                 }
             }
         });
