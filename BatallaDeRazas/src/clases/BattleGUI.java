@@ -150,15 +150,43 @@ public class BattleGUI extends JFrame implements ActionListener{
                 // ONE TURN COMBAT
                 if(cpu.getCurrentHP() > 0 & user.getCurrentHP() > 0) {
                     msg = orderTurns.get(turnNum).atack(orderTurns.get((turnNum + 1) % 2));
+                    System.out.println(turnNum);
                     if(orderTurns.get(turnNum).swapTurn(orderTurns.get((turnNum + 1) % 2))) {
+                        if (turnNum == 0 ) {
+                            user.setDead(false);
+                            user.setIdle(false);
+                            user.setAttacking(true);
+                            cpu.setIdle(true);
+                            cpu.setAttacking(false);
+                            cpu.setDead(false);
+                        }else if (turnNum == 1){
+                            cpu.setDead(false);
+                            cpu.setIdle(false);
+                            cpu.setAttacking(true);
+                            user.setIdle(true);
+                            user.setAttacking(false);
+                            user.setDead(false);
+                        }
                         turnNum = (turnNum + 1) % 2;
                     }
                     console.append(msg);
                 }else{
                     if(cpu.getCurrentHP() == 0){
+                        cpu.setAttacking(false);
+                        cpu.setIdle(false);
+                        cpu.setDead(true);
+                        user.setAttacking(false);
+                        user.setIdle(true);
+                        user.setDead(false);
                         console.append("YOU DEFEATED");
                         combatPanel.repaint();
                     } else{
+                        user.setAttacking(false);
+                        user.setIdle(false);
+                        user.setDead(true);
+                        cpu.setAttacking(false);
+                        cpu.setIdle(true);
+                        cpu.setDead(false);
                         console.append("YOU DIED");
                         combatPanel.repaint();
                     }
@@ -305,11 +333,23 @@ public class BattleGUI extends JFrame implements ActionListener{
             if (user.getCurrentHP() > 0) {// WIN
                 ++roundNum;
                 newOpponent();
+                user.setDead(false);
+                user.setIdle(true);
+                user.setAttacking(false);
+                cpu.setIdle(true);
+                cpu.setAttacking(false);
+                cpu.setDead(false);
                 startRound();
                 combatPanel.repaint();
             } else {// LOSE
                 roundNum = 1;
                 newOpponent();
+                user.setDead(false);
+                user.setIdle(true);
+                user.setAttacking(false);
+                cpu.setIdle(true);
+                cpu.setAttacking(false);
+                cpu.setDead(false);
                 user.setWeapon(null);
                 new GUI(user, cpu, wc);
                 user.resetItems();

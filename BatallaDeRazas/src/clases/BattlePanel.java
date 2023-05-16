@@ -84,29 +84,23 @@ public class BattlePanel extends JPanel {
 
     public void changeImg(){
         try {
-            switch (animNum) {
-                case 0:// 2 idle
-                    playersImgs[0] = ImageIO.read(new File( "BatallaDeRazas/src/characters/"+usr.getWarrior().getUrlIdle()));
-                    playersImgs[1] = ImageIO.read(new File( "BatallaDeRazas/src/characters/"+cpu.getWarrior().getUrlIdle()));
-                    break;
-                case 1:// user attacks
-                    playersImgs[0] = ImageIO.read(new File( "BatallaDeRazas/src/characters/"+usr.getWarrior().getUrlAttack()));
-                    playersImgs[1] = ImageIO.read(new File( "BatallaDeRazas/src/characters/"+cpu.getWarrior().getUrlIdle()));
-                    break;
-                case 2:// cpu attacks
-                    playersImgs[0] = ImageIO.read(new File( "BatallaDeRazas/src/characters/"+usr.getWarrior().getUrlIdle()));
-                    playersImgs[1] = ImageIO.read(new File( "BatallaDeRazas/src/characters/"+cpu.getWarrior().getUrlAttack()));
-                    break;
-                case 3:// user death
-                    playersImgs[0] = ImageIO.read(new File( "BatallaDeRazas/src/characters/"+usr.getWarrior().getUrlDeath()));
-                    playersImgs[1] = ImageIO.read(new File( "BatallaDeRazas/src/characters/"+cpu.getWarrior().getUrlIdle()));
-                    break;
-                case 4:// cpu death
-                    playersImgs[0] = ImageIO.read(new File( "BatallaDeRazas/src/characters/"+usr.getWarrior().getUrlIdle()));
-                    playersImgs[1] = ImageIO.read(new File( "BatallaDeRazas/src/characters/"+cpu.getWarrior().getUrlDeath()));
-                    break;
+            if (usr.isAttacking()) {
+                playersImgs[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/"+usr.getWarrior().getUrlAttack()));
+                playersImgs[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/"+cpu.getWarrior().getUrlIdle()));
+            } else if (cpu.isAttacking()) {
+                playersImgs[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + usr.getWarrior().getUrlIdle()));
+                playersImgs[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + cpu.getWarrior().getUrlAttack()));
+            }else if (usr.isDead()) {
+                playersImgs[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + usr.getWarrior().getUrlDeath()));
+                playersImgs[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + cpu.getWarrior().getUrlIdle()));
+            }else if (cpu.isDead()) {
+                playersImgs[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + usr.getWarrior().getUrlIdle()));
+                playersImgs[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/" + cpu.getWarrior().getUrlDeath()));
+            } else{
+                playersImgs[0] = ImageIO.read(new File("BatallaDeRazas/src/characters/"+usr.getWarrior().getUrlIdle()));
+                playersImgs[1] = ImageIO.read(new File("BatallaDeRazas/src/characters/"+cpu.getWarrior().getUrlIdle()));
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }

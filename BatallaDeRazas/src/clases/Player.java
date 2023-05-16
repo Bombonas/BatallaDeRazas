@@ -9,6 +9,7 @@ public class Player {
 	private Weapon weapon;
 	private int currentHP;
 	private ArrayList<Weapon> items;
+    private boolean isIdle, isAttacking, isDead;
 	
 	public Player(Warrior w, String name) {
         //TODO doble declaracion items
@@ -19,6 +20,9 @@ public class Player {
 		weapon = null;
 		currentHP = w.getHp();
         items = new ArrayList<Weapon>();
+        isIdle = true;
+        isAttacking = false;
+        isDead = false;
 	}
 	
 	public String atack(Player defender) {
@@ -100,6 +104,18 @@ public class Player {
     public String getName() { return name; }
 
     public void setName(String name) { this.name = name; }
+
+    public boolean isIdle() {return isIdle;}
+
+    public void setIdle(boolean idle) {isIdle = idle;}
+
+    public boolean isAttacking() {return isAttacking;}
+
+    public void setAttacking(boolean attacking) {isAttacking = attacking;}
+
+    public boolean isDead() {return isDead;}
+
+    public void setDead(boolean dead) {isDead = dead;}
 
     public ArrayList<Weapon> getItems(){ return items;}
 
