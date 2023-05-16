@@ -232,6 +232,10 @@ public class BattleGUI extends JFrame implements ActionListener{
         cpu.setCurrentHP(cpu.getWarrior().getHp());
         user.setCurrentHP(user.getWarrior().getHp());
 
+        if(user.getName().equals("ezMode") && roundNum == 1){
+            user.setItem(wc.getRandomItem(-2));
+        }
+
         if(user.getItems().size() > 0){
             for(Weapon i: user.getItems()){
                 user.setCurrentHP(user.getCurrentHP() + i.getHp());
