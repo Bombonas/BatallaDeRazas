@@ -123,7 +123,7 @@ public class WarriorContainer {
 		return w;
 	}
 
-	public Warrior getTheFinalBoss(){
+	public Warrior getTheFinalBoss(){// Method to get the final boss
 		Warrior w;
 		Random rand = new Random();
 		while(true){
@@ -133,7 +133,7 @@ public class WarriorContainer {
 		return w;
 	}
 
-	public Weapon getRandomItem(int quality){
+	public Weapon getRandomItem(int quality){// Method to get a random item
 		Random rand = new Random();
 		Weapon w;
 

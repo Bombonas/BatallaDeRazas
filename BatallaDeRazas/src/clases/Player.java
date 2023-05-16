@@ -24,18 +24,24 @@ public class Player {
         isAttacking = false;
         isDead = false;
 	}
-	
+
+    // This method calculate the damage and create the text of the console
 	public String atack(Player defender) {
 		Random rand = new Random();
 		String ret = name + "'S TURN\n";
 		// Set the atack chance 
 		int missChance = rand.nextInt(100)+1;
-		if(getTotalAgility()*10 >= missChance) {
+        // checks if the attacks hits
+		if(getTotalAgility()*10 >= missChance) {// yes
 			ret += "Successful Attack";
             int dodgeChance = rand.nextInt(50)+1;
+
+            // checks if the enemy dodge the attack
             if(defender.getTotalAgility()/2 < dodgeChance) {
+                // calculate damage
                 int atckDmg = getTotalStrength() - defender.getTotalDefense();
 
+                // conditional to avoid negative damage
                 if(atckDmg < 0){
                     atckDmg = 0;
                 }
@@ -53,7 +59,7 @@ public class Player {
         return ret + "\n\n";
 	}
 
-    //TODO metodo sin usar
+    // This method returns true if the game change turn
 	public boolean swapTurn(Player defender) {
 		// 
 		boolean ret = true;
@@ -120,7 +126,8 @@ public class Player {
     public ArrayList<Weapon> getItems(){ return items;}
 
     public String toString() { return name + ": " + warrior.getName() + "\\" + warrior.getRace() + " - " + weapon.getName(); }
-	
+
+    // This method calculate the Strength of all sources of the player
 	public int getTotalStrength() {
         int totalStrength = this.getWarrior().getStrength() + this.getWeapon().getStrength();
         for(Weapon item: items) {
@@ -128,7 +135,8 @@ public class Player {
         }
         return totalStrength;
     }
-    
+
+    // This method calculate the Defense of all sources of the player
     public int getTotalDefense() {
         int totalDefense = this.getWarrior().getDefense() + this.getWeapon().getDefense();
         for(Weapon item: items) {
@@ -136,7 +144,8 @@ public class Player {
         }
         return totalDefense;
     }
-    
+
+    // This method calculate the Agility of all sources of the player
     public int getTotalAgility() {
         int totalAgility = this.getWarrior().getAgility() + this.getWeapon().getAgility();
         for(Weapon item: items) {
@@ -144,7 +153,8 @@ public class Player {
         }
         return totalAgility;
     }
-    
+
+    // This method calculate the Speed of all sources of the player
     public int getTotalSpeed() {
         int totalSpeed = this.getWarrior().getSpeed() + this.getWeapon().getSpeed();
         for(Weapon item: items) {
@@ -153,6 +163,7 @@ public class Player {
         return totalSpeed;
     }
 
+    // This method calculate the HP of all sources of the player
     public int getTotalHP() {
         int totalHP = this.getWarrior().getHp() + this.getWeapon().getHp();
         for(Weapon item: items) {
@@ -161,6 +172,7 @@ public class Player {
         return totalHP;
     }
 
+    // Clear the array of items
     public void resetItems(){
         items.clear();
     }
