@@ -30,7 +30,11 @@ public class Player {
             int dodgeChance = rand.nextInt(50)+1;
             if(defender.getTotalAgility()/2 < dodgeChance) {
                 int atckDmg = getTotalStrength() - defender.getTotalDefense();
-                ret += "\n"+defender.getName() + " has suffered " + atckDmg + " damage points";
+
+                if(atckDmg < 0){
+                    atckDmg = 0;
+                }
+                ret += "\n" + defender.getName() + " has suffered " + atckDmg + " damage points";
                 if(defender.getCurrentHP()-atckDmg < 0) {
                     defender.setCurrentHP(0);
                 }else {
@@ -137,6 +141,10 @@ public class Player {
             totalHP += item.getHp();
         }
         return totalHP;
+    }
+
+    public void resetItems(){
+        items.clear();
     }
 
 }
