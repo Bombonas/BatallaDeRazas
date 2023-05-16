@@ -234,6 +234,11 @@ public class BattleGUI extends JFrame implements ActionListener{
 
         if(user.getItems().size() > 0){
             for(Weapon i: user.getItems()){
+                user.setCurrentHP(user.getCurrentHP() + i.getHp());
+            }
+        }
+        if(cpu.getItems().size() > 0){
+            for(Weapon i: cpu.getItems()){
                 cpu.setCurrentHP(cpu.getCurrentHP() + i.getHp());
             }
         }
@@ -281,6 +286,8 @@ public class BattleGUI extends JFrame implements ActionListener{
             newOpponent();
             user.setWeapon(null);
             new GUI(user, cpu, wc);
+            user.resetItems();
+            cpu.resetItems();
             dispose();
         }
     }

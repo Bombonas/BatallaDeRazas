@@ -139,4 +139,8 @@ public class Player {
         return totalHP;
     }
 
+    public void resetItems(){
+        items.clear();
+    }
+
 }
