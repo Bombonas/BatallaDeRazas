@@ -233,29 +233,40 @@ public class BattlePanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        ImageIcon backgroundIcon = new ImageIcon(imgBackground.getScaledInstance(1280, 680, Image.SCALE_SMOOTH));
-        backgroundIcon.paintIcon(this, g, 0, 0);
-        drawnHPBars(g);
-        finalText(g);
-        int cpuYpos = 200, cpuXpos = 450, userXPosdwarf = 0, userYPosdwarf = 0, cpuXPosdwarf = 0, cpuYPosdwarf = 0;
-        if(!cpu.getWarrior().getplayable()){
-            cpuXpos = 300;
-            cpuYpos = 50;
+        if(cpu.getWarrior().getName().equals("finalBoss") && cpu.getCurrentHP() == 0){
+            try {
+                BufferedImage winBackground = ImageIO.read(new File(
+                        "BatallaDeRazas/src/background/win.jpg"));
+                ImageIcon winIcon = new ImageIcon(winBackground.getScaledInstance(1280, 680, Image.SCALE_SMOOTH));
+                winIcon.paintIcon(this, g, 0, 0);
+            }catch (IOException e){
+                throw new RuntimeException(e);
+            }
+        }else {
+            ImageIcon backgroundIcon = new ImageIcon(imgBackground.getScaledInstance(1280, 680, Image.SCALE_SMOOTH));
+            backgroundIcon.paintIcon(this, g, 0, 0);
+            drawnHPBars(g);
+            finalText(g);
+            int cpuYpos = 200, cpuXpos = 450, userXPosdwarf = 0, userYPosdwarf = 0, cpuXPosdwarf = 0, cpuYPosdwarf = 0;
+            if (!cpu.getWarrior().getplayable()) {
+                cpuXpos = 300;
+                cpuYpos = 50;
+            }
+            if (cpu.getWarrior().getRace().equals("dwarf")) {
+                cpuXPosdwarf = 100;
+                cpuYPosdwarf = 130;
+            }
+            if (usr.getWarrior().getRace().equals("dwarf")) {
+                userXPosdwarf = 100;
+                userYPosdwarf = 150;
+            }
+            //charactersAnimations();
+            if (actualFrame[0] != null && actualFrame[1] != null) {
+                actualFrame[0].paintIcon(this, g, -50 + userXPosdwarf, 250 + userYPosdwarf);
+                actualFrame[1].paintIcon(this, g, cpuXpos + cpuXPosdwarf, cpuYpos + cpuYPosdwarf);
+            }
+            drawnStats(g);
+            drawnItems(g);
         }
-        if(cpu.getWarrior().getRace().equals("dwarf") ){
-            cpuXPosdwarf = 100;
-            cpuYPosdwarf = 130;
-        }
-        if(usr.getWarrior().getRace().equals("dwarf")){
-            userXPosdwarf = 100;
-            userYPosdwarf = 150;
-        }
-        //charactersAnimations();
-        if(actualFrame[0] != null && actualFrame[1] != null ) {
-            actualFrame[0].paintIcon(this, g, -50+ userXPosdwarf, 250 + userYPosdwarf);
-            actualFrame[1].paintIcon(this, g, cpuXpos + cpuXPosdwarf, cpuYpos + cpuYPosdwarf);
-        }
-        drawnStats(g);
-        drawnItems(g);
     }
 }
