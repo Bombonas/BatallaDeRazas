@@ -70,7 +70,7 @@ public class GUI extends JFrame {
         tabsPanel = new JPanel();
         tabsPanel.setOpaque(false);
         tabsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0,0));
-        tabsPanel.setPreferredSize(new Dimension(650, 500));
+        tabsPanel.setPreferredSize(new Dimension(660, 520));
         tabWeapons = new EventPanel() {
             //Draw background for weapons tab
             protected void paintComponent(Graphics g) {
@@ -110,7 +110,7 @@ public class GUI extends JFrame {
                 g2d.drawString(text2, 480, 70);
             }
         };
-        characterPanel.setPreferredSize(new Dimension(650, 100));
+        characterPanel.setPreferredSize(new Dimension(650, 110));
         stagePanel = new EventPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -625,27 +625,30 @@ public class GUI extends JFrame {
                 setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 Graphics2D g2d = (Graphics2D) g;
                 g2d.setFont(pixelFont.deriveFont(17f));
-                Component characterHovered = getComponentAt(getMousePosition());
-                int y = 50;
-                for (int i = 0; i < tabCharacters.getComponentCount(); i++) {
-                    String characterStats = wc.getWarriors().get(i).getName() + "\n" +
-                                              wc.getWarriors().get(i).getRace() + "\n" +
-                                              "HP " + wc.getWarriors().get(i).getHp() + "\n" +
-                                              "Str " + wc.getWarriors().get(i).getStrength() + "\n" +
-                                              "Def " + wc.getWarriors().get(i).getDefense() + "\n" +
-                                              "Agi " + wc.getWarriors().get(i).getAgility() + "\n" +
-                                              "Spd " + wc.getWarriors().get(i).getSpeed() + "\n";
-                    String[] stats = characterStats.split("\n");
-                    if (characterHovered.equals(labelCharacters[i])) {
-                        for (String stat : stats) {
-                            g2d.setColor(Color.BLACK);
-                            g2d.drawString(stat, 8, y);
-                            g2d.setColor(new Color(245, 154, 98));
-                            g2d.drawString(stat, 10, y + 1);
-                            y = y + 16;
+                try {
+                    Component characterHovered = getComponentAt(getMousePosition());
+                    int y = 50;
+                    for (int i = 0; i < tabCharacters.getComponentCount(); i++) {
+                        String characterStats = wc.getWarriors().get(i).getName() + "\n" +
+                                wc.getWarriors().get(i).getRace() + "\n" +
+                                "HP " + wc.getWarriors().get(i).getHp() + "\n" +
+                                "Str " + wc.getWarriors().get(i).getStrength() + "\n" +
+                                "Def " + wc.getWarriors().get(i).getDefense() + "\n" +
+                                "Agi " + wc.getWarriors().get(i).getAgility() + "\n" +
+                                "Spd " + wc.getWarriors().get(i).getSpeed() + "\n";
+                        String[] stats = characterStats.split("\n");
+                        if (characterHovered.equals(labelCharacters[i])) {
+                            for (String stat : stats) {
+                                g2d.setColor(Color.BLACK);
+                                g2d.drawString(stat, 8, y);
+                                g2d.setColor(new Color(245, 154, 98));
+                                g2d.drawString(stat, 10, y + 1);
+                                y = y + 16;
+                            }
                         }
                     }
-                }
+                }catch (NullPointerException e) {}
+
             }else{
                 setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             }
