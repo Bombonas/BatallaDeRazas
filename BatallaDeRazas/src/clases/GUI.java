@@ -22,12 +22,13 @@ import java.util.ArrayList;
 public class GUI extends JFrame {
     private JPanel mainPanel, tabsPanel, tabRanking, characterPanel, fightPanel;
     private EventPanel stagePanel, tabCharacters, tabWeapons, tabStage;
-    private JButton fightButton;
+    private JButton fightButton, fleeButton;
     private JLabel label1, labelCharacterPanel, labelSelectedWeapon, labelCPUwarrior, labelCPUWeapon;
-    private JLabel[] labelStages, labelCharacters, weaponLabel;
+    private JLabel[] labelStages, weaponLabel;
+    private CharacterLabel[] labelCharacters;
     private JTabbedPane tabPane;
     private BufferedImage[] stages, characters;
-    private BufferedImage selectedBackground;
+    private BufferedImage selectedBackground, fightButtonImage, fleeButtonImage;
     private Timer timer;
     private Player usr, cpu;
     private WarriorContainer wc;
@@ -51,18 +52,25 @@ public class GUI extends JFrame {
         setLocationRelativeTo(null);
 
         //Initialize JPanels
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
-        tabsPanel = new JPanel() {
+        mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.setColor(new Color(87, 54, 44));
-                g.fillRect(0, 0,getWidth(), getHeight());
+                Graphics2D g2d = (Graphics2D) g;
+                try {
+                    BufferedImage bg = ImageIO.read(new File("BatallaDeRazas/src/background/frameBackground.png"));
+                    Image scaledBg = bg.getScaledInstance(1280,720,BufferedImage.TYPE_INT_ARGB);
+                    g2d.drawImage(scaledBg, 0, 0, this);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         };
+        mainPanel.setLayout(new BorderLayout());
+        tabsPanel = new JPanel();
+        tabsPanel.setOpaque(false);
         tabsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0,0));
-        tabsPanel.setPreferredSize(new Dimension(650, 500));
+        tabsPanel.setPreferredSize(new Dimension(660, 520));
         tabWeapons = new EventPanel() {
             //Draw background for weapons tab
             protected void paintComponent(Graphics g) {
@@ -102,10 +110,27 @@ public class GUI extends JFrame {
                 g2d.drawString(text2, 480, 70);
             }
         };
-        characterPanel.setPreferredSize(new Dimension(650, 100));
-        stagePanel = new EventPanel();
+        characterPanel.setPreferredSize(new Dimension(650, 110));
+        stagePanel = new EventPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2d = (Graphics2D) g;
+                try {
+                    BufferedImage frameStage = ImageIO.read(new File("BatallaDeRazas/src/background/stageFrame.png"));
+                    Image scaledFrame = frameStage.getScaledInstance(this.getWidth(), this.getHeight()-60,
+                            BufferedImage.TYPE_INT_ARGB);
+                    g2d.drawImage(scaledFrame, 3, -15, this);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        };
+        stagePanel.setOpaque(false);
         stagePanel.setLayout(new BorderLayout());
         fightPanel = new JPanel();
+        fightPanel.setLayout(new BoxLayout(fightPanel, BoxLayout.X_AXIS));
+        fightPanel.setOpaque(false);
 
         //Define image paths for stages and characters
         try {
@@ -115,6 +140,8 @@ public class GUI extends JFrame {
                     "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(16f);
             rankingInfoFont = Font.createFont(Font.TRUETYPE_FONT, new File(
                     "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(11.75f);
+            fightButtonImage = ImageIO.read(new File("BatallaDeRazas/src/button/fight.png"));
+            fleeButtonImage = ImageIO.read(new File("BatallaDeRazas/src/button/flee.png"));
             stages = new BufferedImage[3];
             stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
             stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
@@ -154,7 +181,7 @@ public class GUI extends JFrame {
             }
         };
         tabCharacters.setLayout(new GridLayout(3, 3));
-        labelCharacters = new JLabel[9];
+        labelCharacters = new CharacterLabel[9];
         //Label will include selected character
         labelCharacterPanel = new JLabel();
         labelCPUwarrior = new JLabel();
@@ -165,7 +192,6 @@ public class GUI extends JFrame {
         characterPanel.add(labelCharacterPanel);
         characterPanel.add(labelCPUwarrior);
         characterPanel.add(labelCPUWeapon);
-        UIManager.put("info",Color.BLUE);
         Painter<JComponent> woodenTab = new Painter<JComponent>() {
             @Override
             public void paint(Graphics2D g, JComponent object, int w, int h) {
@@ -195,6 +221,7 @@ public class GUI extends JFrame {
             }
         };
 
+        //Set every tab's state to the wooden style Painter
         UIManager.put("TabbedPane:TabbedPaneTab[Enabled].backgroundPainter", woodenTab);
         UIManager.put("TabbedPane:TabbedPaneTab[Enabled+MouseOver].backgroundPainter", woodenTab);
         UIManager.put("TabbedPane:TabbedPaneTab[Focused+MouseOver+Selected].backgroundPainter", woodenTab);
@@ -207,17 +234,7 @@ public class GUI extends JFrame {
         UIManager.put("ToolTip.font", pixelFont.deriveFont(18f));
         //Fill characters panel with empty labels that will be replaced with animated characters images
         for (int i = 0; i < labelCharacters.length; i++) {
-            labelCharacters[i] = new JLabel();
-            /*
-            labelCharacters[i].setToolTipText("<html>"+wc.getWarriors().get(i).getName()+"<br>"+
-                                              "Race: "+wc.getWarriors().get(i).getRace()+"<br>"+
-                                              "HP: "+wc.getWarriors().get(i).getHp()+ "<br>"+
-                                              "Strength: "+wc.getWarriors().get(i).getStrength()+"<br>"+
-                                              "Defense: "+wc.getWarriors().get(i).getDefense() + "<br>"+
-                                              "Speed: "+wc.getWarriors().get(i).getSpeed()+"<br>"+
-                                              "Agility: "+wc.getWarriors().get(i).getAgility()+"</html>");
-
-             */
+            labelCharacters[i] = new CharacterLabel();
             tabCharacters.add(labelCharacters[i]);
         }
         //Set a timer to update frames for the animations
@@ -278,11 +295,10 @@ public class GUI extends JFrame {
         });
         //Add mouse listener to characters tab and start timer
         tabCharacters.addMouseListener(tabCharacters);
-        //tabCharacters.addMouseMotionListener(tabCharacters);
         timer.start();
 
         //Set default stage
-        label1 = new JLabel(new ImageIcon(stages[0].getScaledInstance(620, 590,
+        label1 = new JLabel(new ImageIcon(stages[0].getScaledInstance(468, 470,
                 BufferedImage.TYPE_INT_ARGB)));
         stagePanel.add(label1);
 
@@ -301,9 +317,10 @@ public class GUI extends JFrame {
         DataBaseConn conn = new DataBaseConn();
         ResultSet rs = conn.getQueryRS(
                 """
-                        SELECT players.id, players.name, warriors.name as warrior, weapons.name, count(rounds.id) as rounds
+                        SELECT players.name, warriors.name as warrior, weapons.name as weapon, sum(rounds.battle_points) as points, count(rounds.id) as rounds
                         FROM players
                         JOIN warriors ON warriors.id = players.warrior_id
+                        JOIN races ON races.id = warriors.race_id
                         JOIN weapons ON weapons.id = players.weapon_id
                         JOIN battles ON battles.player_id = players.id
                         JOIN rounds ON rounds.battle_id = battles.id
@@ -312,21 +329,22 @@ public class GUI extends JFrame {
                         ORDER BY count(rounds.id)DESC;""");
         try {
             for (int i = 1; i < 11; ++i) {
-                rs.next();
-                //if (rs.wasNull()) break;
-                for (int j = 0; j < 5; ++j) {
-                    labelMatrix[i][j] = (rs.getString(j + 1));
+                if (rs.next()) {
+                    for (int j = 0; j < 5; ++j) {
+                        labelMatrix[i][j] = (rs.getString(j + 1));
+                    }
+                }else{
+                    break;
                 }
             }
         }catch (SQLException e){
-            System.out.println(e);
+            System.out.println("Error executing ranking query");
         }
 
         conn.closeConn();
 
         // Paint de background and columns
         tabRanking = new EventPanel() {
-            //Draw background image and string for selecting character
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 Graphics2D g2d = (Graphics2D) g;
@@ -338,9 +356,10 @@ public class GUI extends JFrame {
                     String title = "HALL OF FAME";
                     g2d.setFont(pixelFont);
                     g.drawImage(scaledBackground,0, 0, null);
-                    g2d.drawString(title, 100, 40);
-                    g2d.setColor(new Color(225, 159, 159));
-                    g2d.drawString(title, 102, 42);
+                    g2d.setColor(new Color(79, 57, 57));
+                    g2d.drawString(title, 200, 40);
+                    g2d.setColor(new Color(197, 124, 124));
+                    g2d.drawString(title, 202, 42);
                     g2d.setFont(rankingFont);
 
                     // Variable to set the x min value and y min value
@@ -372,17 +391,13 @@ public class GUI extends JFrame {
 
         //Initialize JTabbedPane with tabs for character, weapon, stage and ranking, as well as size of the tab pane
         UIManager.put("TabbedPane.font", pixelFont.deriveFont(25f));
-        //TODO check this UIManager.put("TabbedPane:TabbedPaneTab[Focused+MouseOver+Selected].backgroundPainter", null);
         tabPane = new JTabbedPane();
         tabPane.setPreferredSize(new Dimension(650, 580));
         tabPane.addTab("Character", tabCharacters);
         tabPane.addTab("Weapons", tabWeapons);
-        //tabPane.setIconAt(1, new ImageIcon(stages[0].getScaledInstance(100, 20,
-        //        BufferedImage.TYPE_INT_ARGB)));
         tabPane.addTab("Stage", tabStage);
         tabPane.addTab("Ranking", tabRanking);
         fightPanel.setPreferredSize(new Dimension(200, 100));
-        fightPanel.setBackground(new Color(87, 54, 44));
 
         //Add content to panels
         tabsPanel.add(tabPane);
@@ -405,9 +420,29 @@ public class GUI extends JFrame {
         tabWeapons.setLayout(new FlowLayout());
         setWarriorWeaponsImages();
         setSelectedWeaponImage();
-        //Initialize fight button and add it to fightPanel
-        fightButton = new JButton("Fight!");
+        //Initialize fight button and add it to fightPanel, as well as flee button
+        fightButton = new JButton("FIGHT!");
+        fleeButton = new JButton("FLEE?");
+        fleeButton.setIcon(new ImageIcon(fleeButtonImage.getScaledInstance(76, 76,
+                BufferedImage.TYPE_INT_ARGB)));
+        fightPanel.add(Box.createHorizontalGlue());
         fightPanel.add(fightButton);
+        fightPanel.add(Box.createHorizontalGlue());
+        fightPanel.add(fleeButton);
+        fightPanel.add(Box.createHorizontalGlue());
+        for (int i = 0; i < fightPanel.getComponentCount(); i++) {
+            if (fightPanel.getComponent(i) instanceof JButton) {
+                fightPanel.getComponent(i).setForeground(new Color(255, 216, 216));
+                fightPanel.getComponent(i).setFont(pixelFont.deriveFont(14f));
+                ((JButton) fightPanel.getComponent(i)).setHorizontalTextPosition(SwingConstants.CENTER);
+                ((JButton) fightPanel.getComponent(i)).setVerticalTextPosition(SwingConstants.TOP);
+                fightPanel.getComponent(i).setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                ((JButton) fightPanel.getComponent(i)).setBorderPainted(false);
+                ((JButton) fightPanel.getComponent(i)).setContentAreaFilled(false);
+            }
+        }
+        fightButton.setIcon(new ImageIcon(fightButtonImage.getScaledInstance(76, 76,
+                BufferedImage.TYPE_INT_ARGB)));
         fightButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -417,23 +452,49 @@ public class GUI extends JFrame {
                         throw new NoWeaponSelected();
                     }else{
                         boolean comp = false;
-                        String name = JOptionPane.showInputDialog("Chose your name");
+                        String name = "";
+                        //Check name isn't null or longer than 13 characters
                         while(!comp) {
-                            if ((name != null && !name.isBlank()) && name.length() <= 13) comp = true;
-                            name = JOptionPane.showInputDialog("Chose your name");
+                            name = JOptionPane.showInputDialog(null, "Chose your name",
+                                    "Name Input", JOptionPane.PLAIN_MESSAGE);
+                            if (name == null) {
+                                comp = true;
+                                JOptionPane.getRootFrame();
+                            }else {
+                                if (name.isEmpty()) {
+                                    JOptionPane.showMessageDialog(null, "Name cannot be empty",
+                                            "Invalid Name", JOptionPane.ERROR_MESSAGE);
+                                }else if (name.length() > 13) {
+                                    JOptionPane.showMessageDialog(null, "Name cannot be longer than 13",
+                                            "Invalid Name", JOptionPane.ERROR_MESSAGE);
+                                }else{
+                                    comp = true;
+                                }
+                            }
                         }
-
-                        usr.setName(name);
-                        new BattleGUI(usr, cpu, wc, selectedBackground);
-                        GUI.super.dispose();
+                        //If user has a valid name, start combat
+                        if (name != null) {
+                            usr.setName(name);
+                            new BattleGUI(usr, cpu, wc, selectedBackground);
+                            GUI.super.dispose();
+                        }
                     }
                 } catch (NoWeaponSelected ex) {
                     //Exception shows an error window
                     JOptionPane.showMessageDialog(null, ex.getMessage(), "Error",
                             JOptionPane.ERROR_MESSAGE);
-                } {
-
                 }
+            }
+        });
+        fleeButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Object[] options = {"I'm a coward...", "I'll show you who's the coward!"};
+                int choice = JOptionPane.showOptionDialog(null, "You would shame your ancestors?",
+                        "Fleeing?", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null,
+                        options, null);
+                if (choice == JOptionPane.YES_OPTION) System.exit(0);
+                else if (choice == JOptionPane.NO_OPTION) JOptionPane.getRootFrame();
             }
         });
 
@@ -470,6 +531,7 @@ public class GUI extends JFrame {
             }
         }
     }
+    //Method will display current selected weapon for both players
     public void setSelectedWeaponImage() {
         BufferedImage selectedWeapon;
         BufferedImage cpuWeapon;
@@ -512,7 +574,7 @@ public class GUI extends JFrame {
             for (int i = 0; i < stages.length; i++) {
                 if (clickedComponent.equals(labelStages[i])) {
                     selectedBackground = stages[i];
-                    label1.setIcon(new ImageIcon(stages[i].getScaledInstance(620, 510,
+                    label1.setIcon(new ImageIcon(stages[i].getScaledInstance(468, 470,
                             BufferedImage.TYPE_INT_ARGB)));
                 }
             }
@@ -537,9 +599,7 @@ public class GUI extends JFrame {
                     if (clickedComponent.equals(weaponLabel[i])) {
                         //Change player's weapon to the selected one
                         if (paths[i].equals(usr.getWarrior().getWeapons().get(i).getUrl())) {
-                            System.out.println(usr.getWeapon());
                             usr.setWeapon(usr.getWarrior().getWeapons().get(i));
-                            System.out.println(usr.getWeapon());
                             setSelectedWeaponImage();
                             break;
                         }
@@ -552,6 +612,49 @@ public class GUI extends JFrame {
         public void mouseEntered(MouseEvent e) {}
         public void mouseExited(MouseEvent e) {}
 
+    }
+    //Set internal CharacterLabel class to display stats of every character in the character selection panel
+    class CharacterLabel extends JLabel {
+        public CharacterLabel() {}
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            //After checking if a character is being hovered, draw stats for characters
+            if (isHovered()) {
+                setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                Graphics2D g2d = (Graphics2D) g;
+                g2d.setFont(pixelFont.deriveFont(17f));
+                try {
+                    Component characterHovered = getComponentAt(getMousePosition());
+                    int y = 50;
+                    for (int i = 0; i < tabCharacters.getComponentCount(); i++) {
+                        String characterStats = wc.getWarriors().get(i).getName() + "\n" +
+                                wc.getWarriors().get(i).getRace() + "\n" +
+                                "HP " + wc.getWarriors().get(i).getHp() + "\n" +
+                                "Str " + wc.getWarriors().get(i).getStrength() + "\n" +
+                                "Def " + wc.getWarriors().get(i).getDefense() + "\n" +
+                                "Agi " + wc.getWarriors().get(i).getAgility() + "\n" +
+                                "Spd " + wc.getWarriors().get(i).getSpeed() + "\n";
+                        String[] stats = characterStats.split("\n");
+                        if (characterHovered.equals(labelCharacters[i])) {
+                            for (String stat : stats) {
+                                g2d.setColor(Color.BLACK);
+                                g2d.drawString(stat, 8, y);
+                                g2d.setColor(new Color(245, 154, 98));
+                                g2d.drawString(stat, 10, y + 1);
+                                y = y + 16;
+                            }
+                        }
+                    }
+                }catch (NullPointerException e) {}
+
+            }else{
+                setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            }
+        }
+        //Method will check if mouse is hovering a character label
+        public boolean isHovered() {
+            return getMousePosition() != null;
+        }
     }
 }
 class NoWeaponSelected extends Exception {

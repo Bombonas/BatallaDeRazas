@@ -12,16 +12,25 @@ import java.util.Random;
 
 public class WarriorContainer {
 	private ArrayList<Warrior> warriors, bosses;
+	private ArrayList<Weapon> items;
 	
 	public WarriorContainer() {
 		warriors = new ArrayList<Warrior>();
 		bosses = new ArrayList<Warrior>();
+		items = new ArrayList<Weapon>();
 
 		// ArrayList with all the weapons
 		ArrayList<Weapon> weaponList = new ArrayList<Weapon>();
-		for (Weapon w : new WeaponContainer().getWeapons()) {
+
+		WeaponContainer wc = new WeaponContainer();
+		for (Weapon w : wc.getWeapons()) {
 			weaponList.add(w);
 		}
+
+		for(Weapon w : wc.getItems()){
+			items.add(w);
+		}
+
 
 		// ArrayList to fill each warrior weapons
 		ArrayList<Weapon> weaponAvailable = new ArrayList<Weapon>();
@@ -99,20 +108,39 @@ public class WarriorContainer {
 
 	public Warrior getRandomWarrior() { // Method to get a random warrior from the ArrayList
 		Warrior w;
-
 		Random rand = new Random();
 		w = warriors.get(rand.nextInt(warriors.size()));
-
-
 		return w;
 	}
 
 	public Warrior getRandomBoss() { // Method to get a random warrior from the ArrayList
 		Warrior w;
-
 		Random rand = new Random();
-		w = bosses.get(rand.nextInt(bosses.size()));
+		while(true){
+			w = bosses.get(rand.nextInt(bosses.size()));
+			if(!w.getName().equals("finalBoss")) break;
+		}
+		return w;
+	}
 
+	public Warrior getTheFinalBoss(){
+		Warrior w;
+		Random rand = new Random();
+		while(true){
+			w = bosses.get(rand.nextInt(bosses.size()));
+			if(w.getName().equals("finalBoss")) break;
+		}
+		return w;
+	}
+
+	public Weapon getRandomItem(int quality){
+		Random rand = new Random();
+		Weapon w;
+
+		while(true){
+			w = items.get(rand.nextInt(items.size()));
+			if(w.getQuality() == quality) break;
+		}
 		return w;
 	}
 

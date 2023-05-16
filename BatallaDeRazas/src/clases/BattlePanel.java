@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class BattlePanel extends JPanel {
-    private BufferedImage imgBackground, player, enemy;
+    private BufferedImage imgBackground;
     private Player usr, cpu;
     private Timer timer;
     private int animNum;
@@ -148,31 +148,126 @@ public class BattlePanel extends JPanel {
         timer.start();
     }
 
+    public void drawnItems(Graphics g){
+        if(usr.getItems().size() > 0){
+            int space = 0;
+            for(Weapon i : usr.getItems()){
+                try {
+                    BufferedImage imgItem = ImageIO.read(new File(i.getUrl()));
+                    ImageIcon iconItem = new ImageIcon(imgItem.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
+                    iconItem.paintIcon(this, g, 30, 20 + space);
+                    space += 50;
+                }catch (IOException e){
+                    System.out.println(e);
+                }
+
+            }
+        }
+    }
+
+    public void drawnStats(Graphics g){
+        try {
+            //SET COLORS
+            Color strength = new Color(220, 101, 4);
+            Color defense = new Color(0, 98, 129);
+            Color agility = new Color(136, 243, 5);
+            Color speed = new Color(152, 0, 231);
+
+
+            BufferedImage paper = ImageIO.read(new File("BatallaDeRazas/src/background/oldPaper.png"));
+            ImageIcon paperIcon = new ImageIcon(paper.getScaledInstance(380, 300, Image.SCALE_SMOOTH));
+
+            //PAINT THE PAPERS
+            paperIcon.paintIcon(this, g, 890, 20);
+            paperIcon.paintIcon(this, g, 890, 340);
+
+            int posX = 990, posY = 90;
+
+
+
+
+            for(int i=0; i<2; ++i) {
+                // Draw the stats bars
+                g.setFont(Font.createFont(Font.TRUETYPE_FONT, new File(
+                        "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(8f));
+
+                g.setColor(strength);
+                g.drawString("STR", posX - 5, posY - 10);
+                g.fillRoundRect(posX, posY, 10, Math.round(10 * players[i].getTotalStrength())/2, 7, 7);
+
+                g.setColor(defense);
+                g.drawString("DEF", posX + 25, posY - 10);
+                g.fillRoundRect(posX + 30, posY, 10, Math.round(10 * players[i].getTotalDefense())/2, 7, 7);
+
+                g.setColor(agility);
+                g.drawString("AGI", posX + 55, posY - 10);
+                g.fillRoundRect(posX + 60, posY, 10, Math.round(10 * players[i].getTotalAgility())/2, 7, 7);
+
+                g.setColor(speed);
+                g.drawString("SPE", posX + 85, posY - 10);
+                g.fillRoundRect(posX + 90, posY, 10, Math.round(10 * players[i].getTotalSpeed())/2, 7, 7);
+
+
+                // Draw the player name and warrior name
+                g.setFont(Font.createFont(Font.TRUETYPE_FONT, new File(
+                        "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(12f));
+                g.setColor(Color.BLACK);
+                g.drawString(players[i].getName(), 1110, posY);
+                g.drawString(players[i].getWarrior().getName(), 1110, posY+20);
+
+                BufferedImage imgItem = ImageIO.read(new File(players[i].getWeapon().getUrl()));
+                ImageIcon iconItem = new ImageIcon(imgItem.getScaledInstance(80, 80, Image.SCALE_SMOOTH));
+                iconItem.paintIcon(this, g, 1110, posY+ 30);
+
+
+                posY = 410;
+            }
+
+        }catch (IOException e){
+            System.out.println(e);
+        }catch (FontFormatException e) {
+            g.setFont(new Font("Serif", Font.ITALIC, 17));
+        }
+    }
+
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        ImageIcon backgroundIcon = new ImageIcon(imgBackground.getScaledInstance(1280, 680, Image.SCALE_SMOOTH));
-        backgroundIcon.paintIcon(this, g, 0, 0);
-        drawnHPBars(g);
-        finalText(g);
-        int cpuYpos = 200, cpuXpos = 450, userXPosdwarf = 0, userYPosdwarf = 0, cpuXPosdwarf = 0, cpuYPosdwarf = 0;
-        if(!cpu.getWarrior().getplayable()){
-            cpuXpos = 300;
-            cpuYpos = 50;
-        }
-        if(cpu.getWarrior().getRace().equals("dwarf") ){
-            cpuXPosdwarf = 100;
-            cpuYPosdwarf = 130;
-        }
-        if(usr.getWarrior().getRace().equals("dwarf")){
-            userXPosdwarf = 100;
-            userYPosdwarf = 150;
-        }
-        //charactersAnimations();
-        if(actualFrame[0] != null && actualFrame[1] != null ) {
-            actualFrame[0].paintIcon(this, g, -50+ userXPosdwarf, 250 + userYPosdwarf);
-            actualFrame[1].paintIcon(this, g, cpuXpos + cpuXPosdwarf, cpuYpos + cpuYPosdwarf);
+        if(cpu.getWarrior().getName().equals("finalBoss") && cpu.getCurrentHP() == 0){
+            try {
+                BufferedImage winBackground = ImageIO.read(new File(
+                        "BatallaDeRazas/src/background/win.jpg"));
+                ImageIcon winIcon = new ImageIcon(winBackground.getScaledInstance(1280, 680, Image.SCALE_SMOOTH));
+                winIcon.paintIcon(this, g, 0, 0);
+            }catch (IOException e){
+                throw new RuntimeException(e);
+            }
+        }else {
+            ImageIcon backgroundIcon = new ImageIcon(imgBackground.getScaledInstance(1280, 680, Image.SCALE_SMOOTH));
+            backgroundIcon.paintIcon(this, g, 0, 0);
+            drawnHPBars(g);
+            finalText(g);
+            int cpuYpos = 200, cpuXpos = 450, userXPosdwarf = 0, userYPosdwarf = 0, cpuXPosdwarf = 0, cpuYPosdwarf = 0;
+            if (!cpu.getWarrior().getplayable()) {
+                cpuXpos = 300;
+                cpuYpos = 50;
+            }
+            if (cpu.getWarrior().getRace().equals("dwarf")) {
+                cpuXPosdwarf = 100;
+                cpuYPosdwarf = 130;
+            }
+            if (usr.getWarrior().getRace().equals("dwarf")) {
+                userXPosdwarf = 100;
+                userYPosdwarf = 150;
+            }
+            //charactersAnimations();
+            if (actualFrame[0] != null && actualFrame[1] != null) {
+                actualFrame[0].paintIcon(this, g, -50 + userXPosdwarf, 250 + userYPosdwarf);
+                actualFrame[1].paintIcon(this, g, cpuXpos + cpuXPosdwarf, cpuYpos + cpuYPosdwarf);
+            }
+            drawnStats(g);
+            drawnItems(g);
         }
     }
 }
