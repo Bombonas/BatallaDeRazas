@@ -58,8 +58,10 @@ public class BattlePanel extends JPanel {
         g.fillRoundRect(620, cpuY, Math.round(150 * hpCpu), 10, 7, 7);// CPU
     }
 
+    // This method draw the final combat text
     public void finalText(Graphics g){
         Graphics2D g2 = (Graphics2D) g;
+        // SET THE FONT
         try {
             g2.setFont(Font.createFont(Font.TRUETYPE_FONT, new File(
                     "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(70f));
@@ -70,13 +72,12 @@ public class BattlePanel extends JPanel {
             g2.setFont(new Font("Serif", Font.ITALIC, 17));
         }
 
-        if(usr.getCurrentHP() == 0){
+        if(usr.getCurrentHP() == 0){// TEXT IF YOU LOSE
             g2.setColor(new Color(129, 2, 2));
-            g2.drawString("YOU DIED", 450, 320);
-        } else if (cpu.getCurrentHP() == 0) {
+            g2.drawString("YOU DIED", 250, 200);
+        } else if (cpu.getCurrentHP() == 0) {// TEXT IF YOU WIN
             g2.setColor(new Color(255, 190, 48));
-            //TODO cambiar mensaje
-            g2.drawString("YOU DEFEATED", 330, 320);
+            g2.drawString("YOU DEFEATED", 130, 200);
         }
     }
     //This method checks each player's current state to change the animations for the warriors
@@ -144,6 +145,7 @@ public class BattlePanel extends JPanel {
         timer.start();
     }
 
+    // This method draw the user items
     public void drawnItems(Graphics g){
         if(usr.getItems().size() > 0){
             int space = 0;
@@ -151,8 +153,8 @@ public class BattlePanel extends JPanel {
                 try {
                     BufferedImage imgItem = ImageIO.read(new File(i.getUrl()));
                     ImageIcon iconItem = new ImageIcon(imgItem.getScaledInstance(50, 50, Image.SCALE_SMOOTH));
-                    iconItem.paintIcon(this, g, 30, 20 + space);
-                    space += 50;
+                    iconItem.paintIcon(this, g, 30 + space, 20);
+                    space += 70;
                 }catch (IOException e){
                     System.out.println(e);
                 }
@@ -161,6 +163,7 @@ public class BattlePanel extends JPanel {
         }
     }
 
+    // This method draw the stats of both players
     public void drawnStats(Graphics g){
         try {
             //SET COLORS
@@ -169,7 +172,7 @@ public class BattlePanel extends JPanel {
             Color agility = new Color(136, 243, 5);
             Color speed = new Color(152, 0, 231);
 
-
+            // Set paper image
             BufferedImage paper = ImageIO.read(new File("BatallaDeRazas/src/background/oldPaper.png"));
             ImageIcon paperIcon = new ImageIcon(paper.getScaledInstance(380, 300, Image.SCALE_SMOOTH));
 
@@ -179,26 +182,28 @@ public class BattlePanel extends JPanel {
 
             int posX = 990, posY = 90;
 
-
-
-
+            // Iterate for each player
             for(int i=0; i<2; ++i) {
                 // Draw the stats bars
                 g.setFont(Font.createFont(Font.TRUETYPE_FONT, new File(
                         "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(8f));
 
+                // draw the strength bar
                 g.setColor(strength);
                 g.drawString("STR", posX - 5, posY - 10);
                 g.fillRoundRect(posX, posY, 10, Math.round(10 * players[i].getTotalStrength())/2, 7, 7);
 
+                // draw the defense bar
                 g.setColor(defense);
                 g.drawString("DEF", posX + 25, posY - 10);
                 g.fillRoundRect(posX + 30, posY, 10, Math.round(10 * players[i].getTotalDefense())/2, 7, 7);
 
+                // draw the agility bar
                 g.setColor(agility);
                 g.drawString("AGI", posX + 55, posY - 10);
                 g.fillRoundRect(posX + 60, posY, 10, Math.round(10 * players[i].getTotalAgility())/2, 7, 7);
 
+                // draw the speed bar
                 g.setColor(speed);
                 g.drawString("SPE", posX + 85, posY - 10);
                 g.fillRoundRect(posX + 90, posY, 10, Math.round(10 * players[i].getTotalSpeed())/2, 7, 7);
@@ -211,6 +216,7 @@ public class BattlePanel extends JPanel {
                 g.drawString(players[i].getName(), 1110, posY);
                 g.drawString(players[i].getWarrior().getName(), 1110, posY+20);
 
+                // Draw the weapon image
                 BufferedImage imgItem = ImageIO.read(new File(players[i].getWeapon().getUrl()));
                 ImageIcon iconItem = new ImageIcon(imgItem.getScaledInstance(80, 80, Image.SCALE_SMOOTH));
                 iconItem.paintIcon(this, g, 1110, posY+ 30);
@@ -230,7 +236,9 @@ public class BattlePanel extends JPanel {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        // Check if you have defeated the boss
         if(cpu.getWarrior().getName().equals("finalBoss") && cpu.getCurrentHP() == 0){
+            // Show the final image
             try {
                 BufferedImage winBackground = ImageIO.read(new File(
                         "BatallaDeRazas/src/background/win.jpg"));
@@ -240,24 +248,30 @@ public class BattlePanel extends JPanel {
                 throw new RuntimeException(e);
             }
         }else {
+            // draw the background
             ImageIcon backgroundIcon = new ImageIcon(imgBackground.getScaledInstance(1280, 680, Image.SCALE_SMOOTH));
             backgroundIcon.paintIcon(this, g, 0, 0);
+
             drawnHPBars(g);
             finalText(g);
+
+            // set the pos of the players
             int cpuYpos = 200, cpuXpos = 450, userXPosdwarf = 0, userYPosdwarf = 0, cpuXPosdwarf = 0, cpuYPosdwarf = 0;
-            if (!cpu.getWarrior().getplayable()) {
+
+            if (!cpu.getWarrior().getplayable()) {// Positions for a boss
                 cpuXpos = 300;
                 cpuYpos = 50;
             }
-            if (cpu.getWarrior().getRace().equals("dwarf")) {
+            if (cpu.getWarrior().getRace().equals("dwarf")) {// Positions for a cpu dwarf
                 cpuXPosdwarf = 100;
                 cpuYPosdwarf = 130;
             }
-            if (usr.getWarrior().getRace().equals("dwarf")) {
+            if (usr.getWarrior().getRace().equals("dwarf")) {// Positions for a user dwarf
                 userXPosdwarf = 100;
                 userYPosdwarf = 150;
             }
-            //charactersAnimations();
+
+            // Draw the characters frame
             if (actualFrame[0] != null && actualFrame[1] != null) {
                 actualFrame[0].paintIcon(this, g, -50 + userXPosdwarf, 250 + userYPosdwarf);
                 actualFrame[1].paintIcon(this, g, cpuXpos + cpuXPosdwarf, cpuYpos + cpuYPosdwarf);

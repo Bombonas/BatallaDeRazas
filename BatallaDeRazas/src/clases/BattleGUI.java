@@ -235,7 +235,8 @@ public class BattleGUI extends JFrame implements ActionListener{
         buttonsPanel.add(finish);
     }
     public void newOpponent(){
-        if(roundNum == 16){
+
+        if(roundNum == 16){// FINAL ROUND
             user.setItem(wc.getRandomItem(roundNum/4));
             cpu.setWarrior(wc.getTheFinalBoss());
             cpu.setWeapon();
