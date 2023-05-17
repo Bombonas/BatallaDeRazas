@@ -307,10 +307,10 @@ public class GUI extends JFrame {
         labelMatrix = new String[11][5];
 
         //Initialize headers columns
-        labelMatrix[0][0] = "PLAYER ID";
-        labelMatrix[0][1] = "NAME";
-        labelMatrix[0][2] = "WARRIOR";
-        labelMatrix[0][3] = "WEAPON";
+        labelMatrix[0][0] = "NAME";
+        labelMatrix[0][1] = "WARRIOR";
+        labelMatrix[0][2] = "WEAPON";
+        labelMatrix[0][3] = "POINTS";
         labelMatrix[0][4] = "WON COMBATS";
 
         // DDBB QUERY
