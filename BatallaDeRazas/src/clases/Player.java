@@ -111,8 +111,6 @@ public class Player {
 
     public void setName(String name) { this.name = name; }
 
-    public boolean isIdle() {return isIdle;}
-
     public void setIdle(boolean idle) {isIdle = idle;}
 
     public boolean isAttacking() {return isAttacking;}

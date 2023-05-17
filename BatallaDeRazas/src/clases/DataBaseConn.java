@@ -9,6 +9,7 @@ public class DataBaseConn {
     private Statement stmnt;
     private ResultSet rs;
 
+    // The DataBaseConn constructor open a connection with the database
     public DataBaseConn() {
         String url = "jdbc:mysql://localhost/raceWar?serverTimezone=UTC";
         String usr = "root";
@@ -37,6 +38,7 @@ public class DataBaseConn {
 
     }
 
+    // The method getQueryRS returns a result set with the query passed as a parameter
     public ResultSet getQueryRS(String query) {
 
         try {
@@ -48,6 +50,7 @@ public class DataBaseConn {
         return rs;
     }
 
+    // The method insertData does an insert with the update string passed as a parameter
     public void insertData(String update) {
 
         try {
@@ -59,6 +62,7 @@ public class DataBaseConn {
 
     }
 
+    // The method closeConn close the result set if its running, the statement and the connection
     public void closeConn() {
 
         try {

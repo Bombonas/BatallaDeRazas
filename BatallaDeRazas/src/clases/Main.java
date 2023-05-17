@@ -31,9 +31,13 @@ public class Main {
 		Player cpu = new Player(warriorList.getRandomWarrior(), "CPU");
 		Player usr = new Player(warriorList.getRandomWarrior(), "USR");
 		cpu.setWeapon();
+
+		// Instance the JFrame Menu
 		new GUI(usr, cpu, warriorList);
+
+		// Our first version of the project
 		/*
-		// Instance the ArrayList to put both player and manage the turns
+		Instance the ArrayList to put both player and manage the turns
 		ArrayList<Player> playerList = new ArrayList<Player>();
 		playerList.add(usr);
 		playerList.add(cpu);
