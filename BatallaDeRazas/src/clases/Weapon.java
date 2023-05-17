@@ -36,50 +36,26 @@ public class Weapon {
     public int getHp() {
         return hp;
     }
-    public void setHp(int hp) {
-        this.hp = hp;
-    }
     public int getStrength() {
         return strength;
-    }
-    public void setStrength(int strength) {
-        this.strength = strength;
     }
     public int getDefense() {
         return defense;
     }
-    public void setDefense(int defense) {
-        this.defense = defense;
-    }
     public int getAgility() {
         return agility;
-    }
-    public void setAgility(int agility) {
-        this.agility = agility;
     }
     public int getSpeed() {
         return speed;
     }
-    public void setSpeed(int speed) {
-        this.speed = speed;
-    }
     public int getDefeatPoints() {
         return defeatPoints;
-    }
-    public void setDefeatPoints(int defeatPoints) {
-        this.defeatPoints = defeatPoints;
     }
     public int getIdWeapon() {
         return idWeapon;
     }
-    public void setIdWeapon(int idWeapon) {
-        this.idWeapon = idWeapon;
-    }
     public String getUrl() {
         return url;
-    }
-    public void setUrl(String url) {
-        this.url = url;
     }
     public int getQuality(){ return quality;}
     public String toString() {

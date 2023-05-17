@@ -28,6 +28,7 @@ public class WeaponContainer {
 
             rs = conn.getQueryRS("SELECT * FROM items");
             while (rs.next()){
+                // add an Instance of each item in the arrayList
                 items.add(new Weapon(rs.getString(2), rs.getInt(4), rs.getInt(5),
                         rs.getInt(6), rs.getInt(7), rs.getInt(8), 0,
                         rs.getInt(1), rs.getString(3), rs.getInt(9)));
