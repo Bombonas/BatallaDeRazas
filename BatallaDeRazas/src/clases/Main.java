@@ -1,6 +1,9 @@
 package clases;
 
 import javax.swing.*;
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
@@ -8,7 +11,7 @@ import java.util.Scanner;
 public class Main {
 
 	public static void main(String[] args) {
-		//Instance the warriors container
+
 		try {
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		} catch (ClassNotFoundException e) {
@@ -20,15 +23,21 @@ public class Main {
 		} catch (UnsupportedLookAndFeelException e) {
 			throw new RuntimeException(e);
 		}
+
+		//Instance the warriors container
 		WarriorContainer warriorList = new WarriorContainer();
 
 		// Instance the players
 		Player cpu = new Player(warriorList.getRandomWarrior(), "CPU");
 		Player usr = new Player(warriorList.getRandomWarrior(), "USR");
 		cpu.setWeapon();
+
+		// Instance the JFrame Menu
 		new GUI(usr, cpu, warriorList);
+
+		// Our first version of the project
 		/*
-		// Instance the ArrayList to put both player and manage the turns
+		Instance the ArrayList to put both player and manage the turns
 		ArrayList<Player> playerList = new ArrayList<Player>();
 		playerList.add(usr);
 		playerList.add(cpu);
@@ -91,7 +100,6 @@ public class Main {
 
 						}
 
-						// TODO Cambiar el final de partida
 						System.out.println("Fin de partida:\n1-Seguir Jugandon\n2-Salir");
 						while (true) {
 							if (sc.hasNextInt()) {

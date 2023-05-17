@@ -1,0 +1,30 @@
+body {
+   background-image: url("wallpaper1.jpg");
+   background-repeat: no-repeat;
+   background-size: cover;
+}
+
+table {
+  padding-top: 100px;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  color: #def3ff;
+}
+
+table td {
+  padding: 8px;
+  padding-left: 30px;
+}
+
+@media only screen and (max-width: 600px) {
+  table {
+    font-size: xx-large;
+  }
+  
+  table th,
+  table td {
+    padding: 8px;
+    padding-left: 20px;
+  }
+}

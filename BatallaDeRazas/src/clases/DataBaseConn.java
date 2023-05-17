@@ -7,7 +7,9 @@ public class DataBaseConn {
 
     private Connection conn;
     private Statement stmnt;
+    private ResultSet rs;
 
+    // The DataBaseConn constructor open a connection with the database
     public DataBaseConn() {
         String url = "jdbc:mysql://localhost/raceWar?serverTimezone=UTC";
         String usr = "root";
@@ -25,6 +27,9 @@ public class DataBaseConn {
             // Instance the statement object with the connection
             stmnt = conn.createStatement();
 
+            // Start the ResultSet
+            rs = null;
+
         } catch (ClassNotFoundException e) {
             System.out.println("Driver not charged successfully");
         } catch (SQLException e) {
@@ -33,9 +38,9 @@ public class DataBaseConn {
 
     }
 
+    // The method getQueryRS returns a result set with the query passed as a parameter
     public ResultSet getQueryRS(String query) {
 
-        ResultSet rs = null;
         try {
             rs = stmnt.executeQuery(query);
         } catch (SQLException e) {
@@ -45,6 +50,7 @@ public class DataBaseConn {
         return rs;
     }
 
+    // The method insertData does an insert with the update string passed as a parameter
     public void insertData(String update) {
 
         try {
@@ -56,9 +62,12 @@ public class DataBaseConn {
 
     }
 
+    // The method closeConn close the result set if its running, the statement and the connection
     public void closeConn() {
 
         try {
+            if (rs != null) rs.close();
+            stmnt.close();
             conn.close();
         } catch (SQLException e) {
             System.out.println("Error in close");
