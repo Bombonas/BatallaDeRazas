@@ -17,9 +17,8 @@ public class BattleGUI extends JFrame implements ActionListener{
     private JTextArea console;
     private JPanel buttonsPanel;
     private BattlePanel combatPanel;
-    private JLabel labelBack;
     private JButton turn, hideShow, finish, fastMode;
-    private BufferedImage background;
+    private BufferedImage programIcon;
     private boolean tAreaVisible;
     private JScrollPane scrollPane;
     private Color colorButton, colorBackground;
@@ -49,6 +48,14 @@ public class BattleGUI extends JFrame implements ActionListener{
 
         colorBackground = new Color(53, 32, 112, 255);
         colorButton = new Color(206, 187, 128, 255);
+
+        try {
+            programIcon = ImageIO.read(new File("BatallaDeRazas/src/background/khorne.jpg"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        setTitle("Race Wars");
+        setIconImage(programIcon);
 
         setButtonsPanel();
         setCombatPanel();
@@ -111,9 +118,6 @@ public class BattleGUI extends JFrame implements ActionListener{
         combatPanel.add(scrollPane, BorderLayout.EAST);
     }
 
-    public JTextArea getConsole() {
-        return console;
-    }
 
     public void setButtonsPanel(){
         turn = new JButton("Next Turn");

@@ -28,7 +28,7 @@ public class GUI extends JFrame {
     private CharacterLabel[] labelCharacters;
     private JTabbedPane tabPane;
     private BufferedImage[] stages, characters;
-    private BufferedImage selectedBackground, fightButtonImage, fleeButtonImage;
+    private BufferedImage selectedBackground, fightButtonImage, fleeButtonImage, programIcon;
     private Timer timer;
     private Player usr, cpu;
     private WarriorContainer wc;
@@ -46,12 +46,69 @@ public class GUI extends JFrame {
         //Define JFrame properties: size, close operation, title, location
         setSize(1280,720);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        //setUndecorated(true);
         setTitle("Race Wars");
         setResizable(false);
         setLocationRelativeTo(null);
+        //Images for characters, stages, items
+        setImagesGUI();
+        //Define JPanels for GUI
+        initializePanels();
+        //Custom tabs for the JTabbedPane
+        createWoodenTabs();
+        //Animate characters in character selection panel and selected character panel
+        setAnimations();
+        //Fill ranking tab with content
+        setRankingPanel();
+        //Fill JTabbed Pane's tabs with content
+        addContentTabs();
+        //Add Fight/Flee buttons
+        addMainButtons();
+        //Prepare warrior's weapons images
+        setWarriorWeaponsImages();
+        //Change weapon's tab with selected character's weapons
+        setSelectedWeaponImage();
+        //Add main panel to JFrame and set visible
+        add(mainPanel);
+        setVisible(true);
+    }
 
-        //Initialize JPanels
+    public void setImagesGUI() {
+        //Define image paths for stages and characters
+        try {
+            //Define font
+            pixelFont = Font.createFont(Font.TRUETYPE_FONT, new File(
+                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(32f);
+            rankingFont = Font.createFont(Font.TRUETYPE_FONT, new File(
+                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(16f);
+            rankingInfoFont = Font.createFont(Font.TRUETYPE_FONT, new File(
+                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(11.75f);
+            //Define button images
+            fightButtonImage = ImageIO.read(new File("BatallaDeRazas/src/button/fight.png"));
+            fleeButtonImage = ImageIO.read(new File("BatallaDeRazas/src/button/flee.png"));
+            //Define stages images
+            stages = new BufferedImage[3];
+            stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
+            stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
+            stages[2] = ImageIO.read(new File("BatallaDeRazas/src/background/winter.jpg"));
+            selectedBackground = stages[0];
+            //Define program's icon
+            programIcon = ImageIO.read(new File("BatallaDeRazas/src/background/khorne.jpg"));
+            setIconImage(programIcon);
+            int i = 0;
+            //Define character images
+            characters = new BufferedImage[wc.getWarriors().size()];
+            for (Warrior w: wc.getWarriors()) {
+                characters[i] = ImageIO.read(new File("BatallaDeRazas/src/characters/"+w.getUrlIdle()));
+                i++;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (FontFormatException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    public void initializePanels() {
+        //Paint main panel with background
         mainPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -66,14 +123,16 @@ public class GUI extends JFrame {
                 }
             }
         };
-        mainPanel.setLayout(new BorderLayout());
-        tabsPanel = new JPanel();
+        mainPanel.setLayout(new BorderLayout());//BorderLayout to distribute panels that will be inside main panel
+        tabsPanel = new JPanel();//Panel will have JTabbedPane panel with different tabs and selected character's panel
         tabsPanel.setOpaque(false);
         tabsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0,0));
         tabsPanel.setPreferredSize(new Dimension(660, 520));
+
+        //Paint weapons tab background
         tabWeapons = new EventPanel() {
             //Draw background for weapons tab
-            protected void paintComponent(Graphics g) {
+            protected void paintComponent(Graphics g) {//Tab for available weapons for every character
                 super.paintComponent(g);
                 try {
                     BufferedImage weaponsBackground = ImageIO.read(new File(
@@ -86,9 +145,10 @@ public class GUI extends JFrame {
                 }
             }
         };
-        tabWeapons.addMouseListener(tabWeapons);
-        tabStage = new EventPanel();
-        tabRanking = new JPanel();
+        tabWeapons.addMouseListener(tabWeapons);//MouseListener will receive clicks to change weapon for characters
+        tabStage = new EventPanel();//Tab will have selectable stages
+        tabRanking = new JPanel();//Tab will have round rankings
+        //Paint characterPanel with background
         characterPanel = new JPanel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -110,7 +170,9 @@ public class GUI extends JFrame {
                 g2d.drawString(text2, 480, 70);
             }
         };
-        characterPanel.setPreferredSize(new Dimension(650, 110));
+        characterPanel.setPreferredSize(new Dimension(650, 110));//Resize character panel to fit UI design
+
+        //Paint stagePanel with wooden frame
         stagePanel = new EventPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -126,38 +188,19 @@ public class GUI extends JFrame {
                 }
             }
         };
+        //Remove panel's default color and set layout
         stagePanel.setOpaque(false);
         stagePanel.setLayout(new BorderLayout());
+        //Define and add selected stage to the panel
+        label1 = new JLabel(new ImageIcon(stages[0].getScaledInstance(468, 470,
+                BufferedImage.TYPE_INT_ARGB)));
+        stagePanel.add(label1);
+
+        //Define panel for menu's buttons
         fightPanel = new JPanel();
         fightPanel.setLayout(new BoxLayout(fightPanel, BoxLayout.X_AXIS));
         fightPanel.setOpaque(false);
 
-        //Define image paths for stages and characters
-        try {
-            pixelFont = Font.createFont(Font.TRUETYPE_FONT, new File(
-                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(32f);
-            rankingFont = Font.createFont(Font.TRUETYPE_FONT, new File(
-                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(16f);
-            rankingInfoFont = Font.createFont(Font.TRUETYPE_FONT, new File(
-                    "BatallaDeRazas/src/font/pixelart.ttf")).deriveFont(11.75f);
-            fightButtonImage = ImageIO.read(new File("BatallaDeRazas/src/button/fight.png"));
-            fleeButtonImage = ImageIO.read(new File("BatallaDeRazas/src/button/flee.png"));
-            stages = new BufferedImage[3];
-            stages[0] = ImageIO.read(new File("BatallaDeRazas/src/background/Summer.jpg"));
-            stages[1] = ImageIO.read(new File("BatallaDeRazas/src/background/desert.jpg"));
-            stages[2] = ImageIO.read(new File("BatallaDeRazas/src/background/winter.jpg"));
-            selectedBackground = stages[0];
-            int i = 0;
-            characters = new BufferedImage[wc.getWarriors().size()];
-            for (Warrior w: wc.getWarriors()) {
-                characters[i] = ImageIO.read(new File("BatallaDeRazas/src/characters/"+w.getUrlIdle()));
-                i++;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (FontFormatException e) {
-            throw new RuntimeException(e);
-        }
         //Initialize Character panel and prepare it for animations
         tabCharacters = new EventPanel() {
             //Draw background image and string for selecting character
@@ -180,9 +223,10 @@ public class GUI extends JFrame {
                 }
             }
         };
-        tabCharacters.setLayout(new GridLayout(3, 3));
-        labelCharacters = new CharacterLabel[9];
+        tabCharacters.setLayout(new GridLayout(3, 3));//3 rows and 3 columns for 9 characters
+        tabCharacters.addMouseListener(tabCharacters);//MouseListener will receive clicks to change character
         //Label will include selected character
+        labelCharacters = new CharacterLabel[9];
         labelCharacterPanel = new JLabel();
         labelCPUwarrior = new JLabel();
         labelSelectedWeapon = new JLabel();
@@ -192,6 +236,14 @@ public class GUI extends JFrame {
         characterPanel.add(labelCharacterPanel);
         characterPanel.add(labelCPUwarrior);
         characterPanel.add(labelCPUWeapon);
+        //Add labels for every character
+        for (int i = 0; i < labelCharacters.length; i++) {
+            labelCharacters[i] = new CharacterLabel();
+            tabCharacters.add(labelCharacters[i]);
+        }
+    }
+
+    public void createWoodenTabs() {
         Painter<JComponent> woodenTab = new Painter<JComponent>() {
             @Override
             public void paint(Graphics2D g, JComponent object, int w, int h) {
@@ -230,15 +282,12 @@ public class GUI extends JFrame {
         UIManager.put("TabbedPane:TabbedPaneTab[Selected].backgroundPainter", woodenTab);
         UIManager.put("TabbedPane:TabbedPaneTab[MouseOver+Selected].backgroundPainter", woodenTab);
 
-        //UIManager.put("info", pixelFont);
+        //Set tab's font to pixelFont
         UIManager.put("ToolTip.font", pixelFont.deriveFont(18f));
-        //Fill characters panel with empty labels that will be replaced with animated characters images
-        for (int i = 0; i < labelCharacters.length; i++) {
-            labelCharacters[i] = new CharacterLabel();
-            tabCharacters.add(labelCharacters[i]);
-        }
-        //Set a timer to update frames for the animations
+    }
 
+    public void setAnimations() {
+        //Set a timer to update frames for the animations
         timer = new Timer(150, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 for (int i = 0; i < characters.length; i++) {
@@ -293,15 +342,10 @@ public class GUI extends JFrame {
 
             }
         });
-        //Add mouse listener to characters tab and start timer
-        tabCharacters.addMouseListener(tabCharacters);
         timer.start();
+    }
 
-        //Set default stage
-        label1 = new JLabel(new ImageIcon(stages[0].getScaledInstance(468, 470,
-                BufferedImage.TYPE_INT_ARGB)));
-        stagePanel.add(label1);
-
+    public void setRankingPanel() {
         //Initialize Ranking panel
         tabRanking.setLayout(new GridLayout(11, 5));
         labelMatrix = new String[11][5];
@@ -343,7 +387,7 @@ public class GUI extends JFrame {
 
         conn.closeConn();
 
-        // Paint de background and columns
+        // Paint background and columns
         tabRanking = new EventPanel() {
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
@@ -388,8 +432,9 @@ public class GUI extends JFrame {
                 }
             }
         };
+    }
 
-        //Initialize JTabbedPane with tabs for character, weapon, stage and ranking, as well as size of the tab pane
+    public void addContentTabs() {
         UIManager.put("TabbedPane.font", pixelFont.deriveFont(25f));
         tabPane = new JTabbedPane();
         tabPane.setPreferredSize(new Dimension(650, 580));
@@ -418,18 +463,21 @@ public class GUI extends JFrame {
 
         //Fill weapons tab with selectable weapons from user's warrior
         tabWeapons.setLayout(new FlowLayout());
-        setWarriorWeaponsImages();
-        setSelectedWeaponImage();
+    }
+
+    public void addMainButtons() {
         //Initialize fight button and add it to fightPanel, as well as flee button
         fightButton = new JButton("FIGHT!");
         fleeButton = new JButton("FLEE?");
         fleeButton.setIcon(new ImageIcon(fleeButtonImage.getScaledInstance(76, 76,
                 BufferedImage.TYPE_INT_ARGB)));
+        //Create invisible boxes to center buttons
         fightPanel.add(Box.createHorizontalGlue());
         fightPanel.add(fightButton);
         fightPanel.add(Box.createHorizontalGlue());
         fightPanel.add(fleeButton);
         fightPanel.add(Box.createHorizontalGlue());
+        //Initialize change font of buttons, font color, align font and remove UI's default button visual features
         for (int i = 0; i < fightPanel.getComponentCount(); i++) {
             if (fightPanel.getComponent(i) instanceof JButton) {
                 fightPanel.getComponent(i).setForeground(new Color(255, 216, 216));
@@ -441,8 +489,10 @@ public class GUI extends JFrame {
                 ((JButton) fightPanel.getComponent(i)).setContentAreaFilled(false);
             }
         }
+        //Change button to image
         fightButton.setIcon(new ImageIcon(fightButtonImage.getScaledInstance(76, 76,
                 BufferedImage.TYPE_INT_ARGB)));
+        //Set fight button action to ask for a name and start BattleGUI
         fightButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 try {
@@ -486,6 +536,7 @@ public class GUI extends JFrame {
                 }
             }
         });
+        //Set flee button to give option to close program or go back to the menu
         fleeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -497,11 +548,6 @@ public class GUI extends JFrame {
                 else if (choice == JOptionPane.NO_OPTION) JOptionPane.getRootFrame();
             }
         });
-
-
-        //Add main panel to JFrame and set visible
-        add(mainPanel);
-        setVisible(true);
     }
 
     //Remove weapon images from previous character
