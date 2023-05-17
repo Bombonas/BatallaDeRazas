@@ -136,8 +136,7 @@ public class BattlePanel extends JPanel {
                             actualFrame[i] = new ImageIcon(subimage.getScaledInstance(800, 800, Image.SCALE_SMOOTH));
                         }else {
                             actualFrame[i] = new ImageIcon(subimage.getScaledInstance(500, 500, Image.SCALE_SMOOTH));
-                        }
-                    }
+                        }                    }
                 }
                 repaint();
             }
