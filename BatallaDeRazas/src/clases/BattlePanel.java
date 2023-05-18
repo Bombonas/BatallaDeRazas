@@ -133,7 +133,12 @@ public class BattlePanel extends JPanel {
                         actualFrame[i] = new ImageIcon(subimage.getScaledInstance(350, 200, Image.SCALE_SMOOTH));
                     } else {
                         if(!cpu.getWarrior().getplayable() && i==1){
-                            actualFrame[i] = new ImageIcon(subimage.getScaledInstance(800, 800, Image.SCALE_SMOOTH));
+                            if(cpu.getWarrior().getName().equals("finalBoss")){
+                                actualFrame[i] = new ImageIcon(subimage.getScaledInstance(600, 600, Image.SCALE_SMOOTH));
+                            }
+                            else{
+                                actualFrame[i] = new ImageIcon(subimage.getScaledInstance(800, 800, Image.SCALE_SMOOTH));
+                            }
                         }else {
                             actualFrame[i] = new ImageIcon(subimage.getScaledInstance(500, 500, Image.SCALE_SMOOTH));
                         }                    }
@@ -260,6 +265,10 @@ public class BattlePanel extends JPanel {
             if (!cpu.getWarrior().getplayable()) {// Positions for a boss
                 cpuXpos = 300;
                 cpuYpos = 50;
+                if (cpu.getWarrior().getName().equals("finalBoss")) {
+                    cpuXpos = 350;
+                    cpuYpos = 150;
+                }
             }
             if (cpu.getWarrior().getRace().equals("dwarf")) {// Positions for a cpu dwarf
                 cpuXPosdwarf = 100;
