@@ -37,7 +37,7 @@ Then run the files RaceWar-schema.sql and RaceWar-populate.sql using the user 'r
 
 The files are in the M02 directory.
 
-With both files executed with the user 'root', now you can run the project in Eclipse.
+With both files executed with the user 'root', now you need to import the libriry 'mysql-connector-java-8.0.15.jar' and run the project in Eclipse.
 
 
 ## Authors
