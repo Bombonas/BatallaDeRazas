@@ -40,7 +40,7 @@ INSERT INTO items (name, image_path, hp, strength, defense, agility, speed, qual
     ('Dodge ring', 'BatallaDeRazas/src/items/dodgeRing.png', 0, 0, 0, 2, 1, 2),
     ('Hermes boots', 'BatallaDeRazas/src/items/hermesBoots.png', 0, 0, 1, 0, 3, 2),
     ('Terraria heart', 'BatallaDeRazas/src/items/terrariaHeart.png', 10, 0, 0, 0, 1, 2),
-    ('JoJo Bro', 'BatallaDeRazas/src/weapons/jojoBro.png', 0, 7, 0, 0, 1, 3),
+    ('JoJo Bro', 'BatallaDeRazas/src/items/jojoBro.png', 0, 7, 0, 0, 1, 3),
     ('Piedra torso dragon', 'BatallaDeRazas/src/items/dragonStone.png', 15, 3, 0, 0, 1, 3),
     ('Orbe Ojo Negro', 'BatallaDeRazas/src/items/blackOrb.png', 10, 4, 0, 0, 1, 3),
     ('Alma guardiana fuego', 'BatallaDeRazas/src/items/fireSoul.png', 0, 40, 0, -2, 0, 4),
@@ -68,10 +68,10 @@ INSERT INTO warriors (race_id, name, idle_animation, attack_animation, death_ani
 
 --- Insert bosses into warriors
 INSERT INTO warriors (race_id, name, idle_animation, attack_animation, death_animation, hp, strength, defense, agility, speed, defeatPoints, playable) VALUES
-	(4, 'samurai', 'boss1/idle.png', 'boss1/attack.png', 'boss1/death.png', 80, 12, 4, 6, 6, 100, false),
-    (4, 'necromancer', 'boss3/idle.png', 'boss3/attack.png', 'boss3/death.png', 80, 12, 4, 6, 6, 100, false),
-    (4, 'fireWorm', 'boss2/idle.png', 'boss2/attack.png', 'boss2/death.png', 80, 12, 4, 6, 6, 100, false),
-    (4, 'finalBoss', 'boss4/idle.png', 'boss4/attack.png', 'boss4/death.png', 80, 12, 4, 6, 6, 500, false);
+	(4, 'samurai', 'boss1/idle.png', 'boss1/attack.png', 'boss1/death.png', 80, 12, 4, 6, 6, 21, false),
+    (4, 'necromancer', 'boss3/idle.png', 'boss3/attack.png', 'boss3/death.png', 80, 12, 4, 6, 6, 21, false),
+    (4, 'fireWorm', 'boss2/idle.png', 'boss2/attack.png', 'boss2/death.png', 80, 12, 4, 6, 6, 21, false),
+    (4, 'finalBoss', 'boss4/idle.png', 'boss4/attack.png', 'boss4/death.png', 80, 12, 4, 6, 6, 21, false);
 	COMMIT;
 
 
