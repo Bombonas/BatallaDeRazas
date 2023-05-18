@@ -5,9 +5,9 @@ This project is a game designed in Java.
 
 
 ## Improvements
-Our first upgrade was the idea of divide the project in two frames one for the Menu and the other for the battle.
+Our first upgrade was the idea of dividing the project in two frames, one for the Menu and the other for the battle.
 
-Then we dicide to change the stats values for the users and the weapons, you can find all the changes in the
+Then we decided to change the stats values for the users and the weapons, you can find all the changes in the
 [Rebalance Table](https://docs.google.com/spreadsheets/d/1ufRzPQU2TLZsvlG6Mp-NhqoY8Vm5OGwJ5wNneyL3aVI/edit?usp=sharing).
 
 Other improvements are the implementation of bosses, items and a final boss.
@@ -19,7 +19,7 @@ if(defender.getTotalAgility() < dodgeChance) {
   // Into this conditional we calculate the damages
 }
 ``` 
-And we chage it to:
+And we changed it to:
 ```java
 if(defender.getTotalAgility()/2 < dodgeChance) { 
   // Into this conditional we calculate the damages
